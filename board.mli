@@ -4,6 +4,7 @@ module type Board = sig
   type t
 
   type player = White | Black
+  type move = Pass | Surrender | Place
 
   (* [empty n] creates an empty board of size n
    * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
@@ -28,7 +29,7 @@ module type Board = sig
 
   (* [take_turn] lets the [player] take their turn
    * returns an updated board with the move implemented *)
-  val take_turn : player -> Move.move -> t
+  val take_turn : player -> move -> t
 
   (* returns a string representation of the board
    * used for ascii printing  *)
