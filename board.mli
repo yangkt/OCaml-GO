@@ -1,16 +1,18 @@
-
-
 module type Board = sig
 
   (* represents the board for go *)
   type t
 
-
   type player = White | Black
 
   (* [empty n] creates an empty board of size n
-   * raises invalid_value if the size, [n] requested is not 9, 13, or 19 *)
+   * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
   val empty : int -> t
+
+  (* [is_empty] checks to see if the board is empty
+   * returns true if there are no pieces on the board
+   * returns false if there are pieces on the board *)
+  val is_empty : t -> bool
 
   (* [get_pos] returns a list of positions of the pieces of a given color
    * returns empty list of no pieces are on the board *)
