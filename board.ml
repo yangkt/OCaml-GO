@@ -72,18 +72,13 @@
   let take_turn plr move =
     failwith "unimplemented"
 
+(*Helper function that converts a stone representation in board to a string *)
  let to_ascii i =
   match i with
   | 0 -> "."
   | 1 -> "X"
   | 2 -> "O"
 
-(*
-val map : ('a -> 'b) -> 'a array -> 'b array
-Array.map f a applies function f to all the elements of a,
- and builds an array with the results returned by
- f: [| f a.(0); f a.(1); ...; f a.(Array.length a - 1) |].
-    *)
   let board_to_string brd =
    let b = brd.board in
     Array.fold_left (fun s r -> s^(
