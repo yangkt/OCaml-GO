@@ -1,0 +1,5 @@
+"Resource: C:\\Users\\Katie\\Desktop\\CS3110-As\\go/board.mli": "\252a\005IC\212\231n\r\250\176@\175\021\222x"
+"Rule: ocaml dependencies mli (%=board )": "\211\018\204$\012a)\207/\179_\212$\\\175\164"
+"Rule: ocaml dependencies ml (%=board_test )": "=\218\254M\144\141\232\177/G\222\171\143LW\002"
+"Resource: C:\\Users\\Katie\\Desktop\\CS3110-As\\go/board_test.ml": "\rk\204\215?]d\203\189@\223bC\011\175\t"
+"Rule: ocaml: mli -> cmi (%=board )": "\219\155\152\022\011o\170\014f\200\201\128@\n\209("
