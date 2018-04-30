@@ -36,7 +36,7 @@ module type Board = sig
   val board_to_string : t -> string
 
   (* models the set in Arrays module in OCaml *)
-  val assign : int array array -> int -> int -> int -> unit
+  val assign : int -> int -> int -> int array array -> int array array
 
 
 end

@@ -57,24 +57,38 @@ module Board = struct
   let place brd plr (r, c) =
     let board = brd.board in
     let size = Array.length board in
+    let board_copy = Array.copy board in
+    board_copy.(r).(c) <- plr;
     if r < size && c < size then
       match board.(r).(c) with
       | 0 -> {
                player = plr;
-               board = board.(r).(c) <- plr;
+               board = board_copy;
                msg = "Stone placed"
              }
       | _ -> {
                player = plr;
-               board = board
+               board = board;
                msg = "Position is occupied"
              }
     else
        {
          player = plr;
-         board = board
+         board = board;
          msg = "Out of bounds"
        }
+
+  let stone_score brd plr =
+    let board = brd.board in
+    let size = Array.length board in
+    let int_of_bool b = if b then 1 else 0 in
+    let counter = ref 0 in
+    for i = 1 to size do
+      for j = 1 to size do
+        counter := !counter + (int_of_bool (board.(i).(j) = plr))
+      done;
+    done;
+    !counter
 
   let score plr =
     failwith "unimplemented"
@@ -93,9 +107,8 @@ module Board = struct
       Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\r" )
     "" b
 
-  let assign a r c v =
+  let assign r c v a =
     Array.set a.(r) c v;
     a
 
 end
-
