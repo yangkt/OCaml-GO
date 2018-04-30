@@ -1,0 +1,4 @@
+#directory "_build";;
+#require "board.ml";;
+#require "OUnit";;
+#mod_use "board.ml";;

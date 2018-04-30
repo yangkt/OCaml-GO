@@ -10,8 +10,6 @@
         - let the board change the player after a move
   *)
 
-module Board = struct
-
     type board =
     {
       player : int;
@@ -41,6 +39,7 @@ module Board = struct
       | 0 -> true
       | _ -> false
 
+
   (* redo with array functions ? *)
   let get_pos brd plr =
     let board = brd.board in
@@ -54,6 +53,11 @@ module Board = struct
    done;
     !lst
 
+  let assign r c v a =
+    Array.set a.(r) c v;
+    a
+
+
   let place brd plr (r, c) =
     let board = brd.board in
     let size = Array.length board in
@@ -61,18 +65,18 @@ module Board = struct
       match board.(r).(c) with
       | 0 -> {
                player = plr;
-               board = board.(r).(c) <- plr;
+               board = assign r c plr board;
                msg = "Stone placed"
              }
       | _ -> {
                player = plr;
-               board = board
+               board = board;
                msg = "Position is occupied"
              }
     else
        {
          player = plr;
-         board = board
+         board = board;
          msg = "Out of bounds"
        }
 
@@ -93,9 +97,6 @@ module Board = struct
       Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\r" )
     "" b
 
-  let assign a r c v =
-    Array.set a.(r) c v;
-    a
 
-end
+
 

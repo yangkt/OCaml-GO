@@ -1,14 +1,16 @@
 ### Starting build.
 # Target: board_test.ml.depends, tags: { package(oUnit), extension:ml, file:board_test.ml, ocaml, ocamldep, quiet, traverse }
- ocamlfind ocamldep -package oUnit -modules board_test.ml > board_test.ml.depends # cached
+ ocamlfind ocamldep -package oUnit -modules board_test.ml > board_test.ml.depends
 # Target: board.mli.depends, tags: { package(oUnit), extension:mli, file:board.mli, ocaml, ocamldep, quiet, traverse }
  ocamlfind ocamldep -package oUnit -modules board.mli > board.mli.depends # cached
 # Target: board.cmi, tags: { package(oUnit), byte, compile, extension:mli, file:board.mli, interf, ocaml, quiet, traverse }
  ocamlfind ocamlc -c -package oUnit -o board.cmi board.mli # cached
 # Target: board_test.cmo, tags: { package(oUnit), byte, compile, extension:cmo, extension:ml, file:board_test.cmo, file:board_test.ml, implem, ocaml, quiet, traverse }
  ocamlfind ocamlc -c -package oUnit -o board_test.cmo board_test.ml
-+  ocamlfind ocamlc -c -package oUnit -o board_test.cmo board_test.ml
-File "board_test.ml", line 9, characters 20-32:
-Error: Unbound value Board.assign
-Command exited with code 2.
-# Compilation unsuccessful.
+# Target: board.ml.depends, tags: { package(oUnit), extension:ml, file:board.ml, ocaml, ocamldep, quiet, traverse }
+ ocamlfind ocamldep -package oUnit -modules board.ml > board.ml.depends
+# Target: board.cmo, tags: { package(oUnit), byte, compile, extension:cmo, extension:ml, file:board.cmo, file:board.ml, implem, ocaml, quiet, traverse }
+ ocamlfind ocamlc -c -package oUnit -o board.cmo board.ml
+# Target: board_test.byte, tags: { package(oUnit), byte, dont_link_with, extension:byte, file:board_test.byte, link, ocaml, program, quiet, traverse }
+ ocamlfind ocamlc -linkpkg -package oUnit board.cmo board_test.cmo -o board_test.byte
+# Compilation successful.
