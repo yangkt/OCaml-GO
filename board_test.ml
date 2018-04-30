@@ -76,3 +76,4 @@ let suite =
   >::: board_test
 
 let _ = run_test_tt_main suite
+

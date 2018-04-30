@@ -57,7 +57,6 @@
     Array.set a.(r) c v;
     a
 
-
   let place brd plr (r, c) =
     let board = brd.board in
     let size = Array.length board in
@@ -80,6 +79,18 @@
          msg = "Out of bounds"
        }
 
+  let stone_score brd plr =
+    let board = brd.board in
+    let size = Array.length board in
+    let int_of_bool b = if b then 1 else 0 in
+    let counter = ref 0 in
+    for i = 1 to size do
+      for j = 1 to size do
+        counter := !counter + (int_of_bool (board.(i).(j) = plr))
+      done;
+    done;
+    !counter
+
   let score plr =
     failwith "unimplemented"
 
@@ -96,7 +107,3 @@
     Array.fold_left (fun s r -> s^(
       Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\r" )
     "" b
-
-
-
-

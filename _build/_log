@@ -2,9 +2,9 @@
 # Target: board_test.ml.depends, tags: { package(oUnit), extension:ml, file:board_test.ml, ocaml, ocamldep, quiet, traverse }
  ocamlfind ocamldep -package oUnit -modules board_test.ml > board_test.ml.depends
 # Target: board.mli.depends, tags: { package(oUnit), extension:mli, file:board.mli, ocaml, ocamldep, quiet, traverse }
- ocamlfind ocamldep -package oUnit -modules board.mli > board.mli.depends # cached
+ ocamlfind ocamldep -package oUnit -modules board.mli > board.mli.depends
 # Target: board.cmi, tags: { package(oUnit), byte, compile, extension:mli, file:board.mli, interf, ocaml, quiet, traverse }
- ocamlfind ocamlc -c -package oUnit -o board.cmi board.mli # cached
+ ocamlfind ocamlc -c -package oUnit -o board.cmi board.mli
 # Target: board_test.cmo, tags: { package(oUnit), byte, compile, extension:cmo, extension:ml, file:board_test.cmo, file:board_test.ml, implem, ocaml, quiet, traverse }
  ocamlfind ocamlc -c -package oUnit -o board_test.cmo board_test.ml
 # Target: board.ml.depends, tags: { package(oUnit), extension:ml, file:board.ml, ocaml, ocamldep, quiet, traverse }

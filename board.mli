@@ -39,7 +39,7 @@
    * used for ascii printing  *)
   val board_to_string : board -> string
 
-  (* *)
+  (* models the set in Arrays module in OCaml but does not return unit*)
   val assign : int -> int -> int -> int array array -> int array array
 
 
