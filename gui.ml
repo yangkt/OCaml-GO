@@ -1,7 +1,12 @@
 open GMain
 open GdkKeysyms
+open GObj
+open Boardgui
 
 let locale = GtkMain.Main.init ()
+
+
+
 
 let main () =
   let window = GWindow.window ~width:1000 ~height:700
@@ -14,10 +19,16 @@ let main () =
   let factory = new GMenu.factory menubar in
   let accel_group = factory#accel_group in
   let file_menu = factory#add_submenu "File" in
-
+  let board_menu = factory#add_submenu "Board Size" in
   (* File menu *)
   let factory = new GMenu.factory file_menu ~accel_group in
   factory#add_item "Quit" ~key:_Q ~callback: Main.quit;
+  let bsize = new GMenu.factory board_menu ~accel_group in
+  bsize#add_item "9 x 9" ~key:_1 ~callback: (fun () -> prerr_endline "9 x 9");
+  bsize#add_item "13 x 13" ~key:_2 ~callback: (fun () -> prerr_endline "13 x 13");
+  bsize#add_item "19 x 19" ~key:_3 ~callback: (fun () -> prerr_endline "19 x 19");
+
+
 
     (* Buttons for board size*)
 
@@ -40,6 +51,9 @@ let update_player p =
 
   ;
   *)
+
+   (*let boardgui =new boardgui font ~packing:vbox#add array in
+     boardgui#set_title "Random data";*)
 
 
   (* Display the windows and enter Gtk+ main loop *)
