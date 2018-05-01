@@ -6,6 +6,20 @@ open Boardgui
 let locale = GtkMain.Main.init ()
 
 
+let update_player p =
+  failwith "Unimplemented"
+
+let update_message m =
+  failwith "Unimplemented"
+
+  let update_score s =
+    failwith "Unimplemented"
+
+let draw_board arr =
+  failwith "Unimplemented"
+
+let handle_input i =
+    failwith "Unimplemented"
 
 
 let main () =
@@ -44,13 +58,8 @@ let main () =
       ~packing:vbox#add () in
   button3#connect#clicked ~callback: (fun () -> prerr_endline "19 x 19");
 
-  (*let draw_board arr =
 
-    ;
-let update_player p =
 
-  ;
-  *)
 
    (*let boardgui =new boardgui font ~packing:vbox#add array in
      boardgui#set_title "Random data";*)
