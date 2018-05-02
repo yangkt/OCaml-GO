@@ -26,7 +26,7 @@ let b1 = b |> assign 0 0 1 |> assign 1 1 1 |> assign 2 2 1
            |> assign 3 3 1 |> assign 4 4 1 |> assign 5 5 1
 let get_pos_1_b1 = [(5,5);(4,4);(3,3);(2,2);(1,1);(0,0)]
 let get_pos_2_b1 = []
-let get_pos_2_b1_size = 75
+let get_pos_0_b1_size = 75
 
 
 let brd1 = {
@@ -53,7 +53,7 @@ let board_test = [
     Test get_pos
 *******************************************************************************)
   "get_pos for wht" >:: (fun _ -> assert_equal get_pos_2_b1 (get_pos brd1 2));
-  "get_pos size empty" >:: (fun _ -> assert_equal get_pos_2_b1_size (List.length (get_pos brd1 0)));
+  "get_pos size empty" >:: (fun _ -> assert_equal get_pos_0_b1_size (List.length (get_pos brd1 0)));
   "get_post non existant" >:: (fun _ -> assert_equal [] (get_pos brd1 3));
 
 (******************************************************************************

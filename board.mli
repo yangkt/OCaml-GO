@@ -24,8 +24,8 @@
 
   (* [place] places a piece into [(int*int)] for the given [player]
    * int int pair represents (row, column)
-   * if the placement is invalid, return the original board but
-   * print an error message    *)
+   * if the placement is invalid in any way, the original board is returned with
+   * a descriptive message in the msg field.  *)
   val place : board -> int -> (int*int) -> board
 
   (* [territory_score brd plr] calculates the score from purely territory on the
@@ -37,7 +37,7 @@
   val stone_score : board -> int -> int
 
   (* [score] returns the current score for the given [player] *)
-  val score : int -> int
+  val score : board -> int -> int
 
   (* [take_turn] lets the [player] take their turn
    * returns an updated board with the move implemented
