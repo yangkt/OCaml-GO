@@ -25,7 +25,8 @@
   (* [place] places a piece into [(int*int)] for the given [player]
    * int int pair represents (row, column)
    * if the placement is invalid, return the original board but
-   * print an error message    *)
+   * print an error message (that either the position is occupied or it is
+   * an invalid position )  *)
   val place : board -> int -> (int*int) -> board
 
   (* [score] returns the current score for the given [player] *)
@@ -41,5 +42,3 @@
 
   (* models the set in Arrays module in OCaml but does not return unit*)
   val assign : int -> int -> int -> int array array -> int array array
-
-
