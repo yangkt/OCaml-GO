@@ -91,7 +91,7 @@
     done;
     !counter
 
-  let score plr =
+  let score brd plr =
     failwith "unimplemented"
 
 (*Helper function that converts a stone representation in board to a string *)

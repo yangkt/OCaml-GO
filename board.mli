@@ -29,7 +29,7 @@
   val place : board -> int -> (int*int) -> board
 
   (* [score] returns the current score for the given [player] *)
-  val score : int -> int
+  val score : board -> int -> int
 
   (* [take_turn] lets the [player] take their turn
    * returns an updated board with the move implemented
