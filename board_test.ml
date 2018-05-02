@@ -67,7 +67,10 @@ let board_test = [
 (******************************************************************************
     Test score
 *******************************************************************************)
-
+ "stone_score empty_for_black" >:: (fun _ -> assert_equal 0 (stone_score brd13 1) );
+ "stone_score empty_for_white" >:: (fun _ -> assert_equal 0 (stone_score brd13 2) );
+ "stone_score empty_only_for_white" >:: (fun _ -> assert_equal 0 (stone_score brd1 2) );
+ "stone_score" >:: (fun _ -> assert_equal 6 (stone_score brd1 1) );
 ]
 
 
@@ -76,4 +79,3 @@ let suite =
   >::: board_test
 
 let _ = run_test_tt_main suite
-

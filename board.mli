@@ -28,6 +28,14 @@
    * print an error message    *)
   val place : board -> int -> (int*int) -> board
 
+  (* [territory_score brd plr] calculates the score from purely territory on the
+   * board [brd] for player [plr] *)
+  val territory_score : board -> int -> int
+
+  (* [stone_score brd plr] calculates the score from purely placed stones on the
+   * board [brd] for player [plr] *)
+  val stone_score : board -> int -> int
+
   (* [score] returns the current score for the given [player] *)
   val score : int -> int
 
@@ -41,5 +49,3 @@
 
   (* models the set in Arrays module in OCaml but does not return unit*)
   val assign : int -> int -> int -> int array array -> int array array
-
-
