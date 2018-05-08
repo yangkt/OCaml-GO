@@ -79,6 +79,21 @@
          msg = "Out of bounds"
        }
 
+(*Helper function that converts a stone representation in board to a string *)
+ let to_ascii i =
+  match i with
+  | 0 -> "."
+  | 1 -> "X"
+  | 2 -> "O"
+  | -1 -> "/"
+  | _ -> failwith "Error: Improper representation"
+
+  let board_to_string brd =
+   let b = brd.board in
+    Array.fold_left (fun s r -> s^(
+      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
+    "" b
+
   let stone_score brd plr =
     let board = brd.board in
     let size = Array.length board in
@@ -86,39 +101,33 @@
     let counter = ref 0 in
     for i = 0 to size - 1 do
       for j = 0 to size - 1 do
-        counter := !counter + (int_of_bool (board.(i).(j) = plr))
+        counter := !counter + (int_of_bool (board.(i).(j) == plr))
       done;
     done;
     !counter
 
-  let rec flood_fill board (r,c) plr count_ref =
+  let rec flood_fill (board, still_count) (r,c) plr count_ref =
     (* Index out of bounds *)
     if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
-      board
+      board, still_count
     else
       (* Already explored space *)
       if board.(r).(c) = -1 then
-        board
+        board, still_count
       (* Empty area bordered by both black and white -> belongs to neither *)
       else if (board.(r).(c) = 1 && plr = 2) || (board.(r).(c) = 2 && plr = 1) then
-        (count_ref := 0;
-         board)
-      (* If territory has not been claimed yet, and the current space has
-       * color c, set territory to color c, and recurse *)
-      else if board.(r).(c) <> 0 then
-        let new_plr = if plr = 0 then board.(r).(c) else plr in
-        let down = flood_fill board (r+1,c) new_plr count_ref in
-        let up = flood_fill down (r-1,c) new_plr count_ref in
-        let left = flood_fill up (r,c-1) new_plr count_ref in
-        flood_fill left (r,c+1) board.(r).(c) count_ref
+        board, false
+      else if (board.(r).(c) = plr) then
+        board, still_count
       (* Mark space as counted, increment counter, and recurse *)
       else
         let new_board = assign r c (-1) board in
-        let down = flood_fill new_board (r+1,c) plr count_ref in
+        incr count_ref;
+        let down = flood_fill (new_board, true) (r+1,c) plr count_ref in
         let up = flood_fill down (r-1,c) plr count_ref in
         let left = flood_fill up (r,c-1) plr count_ref in
-        count_ref := !count_ref  + 1;
-        flood_fill left (r,c+1) board.(r).(c) count_ref
+        let right = flood_fill left (r,c+1) plr count_ref in
+        right
 
   (* Checks to see if there is an empty position in the board *)
   let contains_empty arr =
@@ -139,34 +148,31 @@
     else
       !pos
 
+  let copy_matrix m =
+    let n = Array.make_matrix 9 9 0 in
+    for i = 0 to 8 do
+      n.(i) <- Array.copy m.(i);
+    done;
+    n;;
+
+  let print_array a =
+    Array.fold_left (fun s r -> s^(
+      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
+    "" a
+
   let territory_score brd plr =
     let board = brd.board in
     let size = Array.length board in
-    let temp_board = ref (Array.copy board) in
+    let temp_board = copy_matrix board in
     let count = ref 0 in
-    while (contains_empty !temp_board = true) do
-      let prev_area_count = !count in
-      let pos = find_empty !temp_board in
-      let new_board = flood_fill !temp_board pos 0 count in
-      if (!count) - prev_area_count >= size * size / 2 then
-        count := prev_area_count;
-      temp_board := new_board;
+    while (contains_empty temp_board) do
+      let prev_count = !count in
+      let pos = find_empty temp_board in
+      let new_board = flood_fill (temp_board, true) pos plr count in
+      if ((snd new_board) && (!count) - prev_count < size * size / 2) = false then
+        count := prev_count;
     done;
     !count
 
   let score brd plr =
     (territory_score brd plr) + (stone_score brd plr)
-
-(*Helper function that converts a stone representation in board to a string *)
- let to_ascii i =
-  match i with
-  | 0 -> "."
-  | 1 -> "X"
-  | 2 -> "O"
-  | _ -> failwith "Error: Improper representation"
-
-  let board_to_string brd =
-   let b = brd.board in
-    Array.fold_left (fun s r -> s^(
-      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\r" )
-    "" b
