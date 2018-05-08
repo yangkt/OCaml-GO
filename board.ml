@@ -40,19 +40,21 @@ let is_empty b =
   | 0 -> true
   | _ -> false
 
+let get_pos_array arr plr =
+  let lst = ref [] in
+  for r = 0 to  (Array.length arr)-1 do
+    for c = 0 to (Array.length arr)-1 do
+      if arr.(r).(c) = plr then
+        lst := (r,c)::(!lst)
+      else ()
+    done;
+  done;
+  !lst
 
 (* redo with array functions ? *)
 let get_pos brd plr =
   let board = brd.board in
-  let lst = ref [] in
-    for r = 0 to  (Array.length board)-1 do
-      for c = 0 to (Array.length board)-1 do
-        if board.(r).(c) = plr then
-          lst := (r,c)::(!lst)
-        else ()
-      done;
-    done;
-  !lst
+  get_pos_array board plr
 
 let assign r c v a =
   Array.set a.(r) c v;
@@ -119,24 +121,9 @@ let rec flood_fill (board, still_count) (r,c) plr count_ref =
       let right = flood_fill left (r,c+1) plr count_ref in
       right
 
-(* Checks to see if there is an empty position in the board *)
-let contains_empty arr =
-  Array.fold_left (fun acc x -> acc || Array.mem 0 x) false arr
-
 (* Find an empty position on board. If no empty positions, raise Not_found *)
 let find_empty arr =
-  let pos = ref (-1,-1) in
-  let size = Array.length arr in
-  for i = 0 to size - 1 do
-    for j = 0 to size - 1 do
-      if arr.(i).(j) = 0 then
-        pos := (i, j);
-    done;
-  done;
-  if !pos = (-1,-1) then
-    raise Not_found
-  else
-    !pos
+  get_pos_array arr 0
 
 let copy_matrix m =
   let n = Array.make_matrix 9 9 0 in
@@ -155,9 +142,9 @@ let territory_score brd plr =
   let size = Array.length board in
   let temp_board = copy_matrix board in
   let count = ref 0 in
-  while (contains_empty temp_board) do
+  while (List.length (find_empty temp_board) <> 0) do
     let prev_count = !count in
-    let pos = find_empty temp_board in
+    let pos = List.hd (find_empty temp_board) in
     let new_board = flood_fill (temp_board, true) pos plr count in
     if ((snd new_board) && (!count) - prev_count < size * size / 2) = false then
       count := prev_count;
