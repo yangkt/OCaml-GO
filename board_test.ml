@@ -57,6 +57,14 @@ let brd2 = {
   msg = ""
 }
 
+let b3 = copy_matrix b1
+let brd3 = {
+  board = b3;
+  player = 1;
+  msg = ""
+}
+
+
 let outofBound = "Out of bounds"
 let placeMsg = "Stone placed"
 let failMsg = "Position is occupied"
@@ -92,8 +100,8 @@ let board_test = [
 *******************************************************************************)
  "stone_score empty_for_black" >:: (fun _ -> assert_equal 0 (stone_score brd13 1) );
  "stone_score empty_for_white" >:: (fun _ -> assert_equal 0 (stone_score brd13 2) );
- "stone_score empty_only_for_white" >:: (fun _ -> assert_equal 0 (stone_score brd1 2) );
- "stone_score" >:: (fun _ -> assert_equal 6 (stone_score brd1 1) );
+ "stone_score empty_only_for_white" >:: (fun _ -> assert_equal 0 (stone_score brd3 2) );
+ "stone_score" >:: (fun _ -> assert_equal 6 (stone_score brd3 1) );
  "territory_score" >:: (fun _ -> assert_equal 16 (territory_score brd2 1));
 ]
 
