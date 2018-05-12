@@ -25,7 +25,7 @@ let is_end_msg brd =
          msg = "Game over, board is full"
        }
 
-  (* a function to create an int array array of size [n]X[n] *)
+  (* a function to create an int array array of size [n]x[n] *)
   let create n =
     match n with
     | 9 ->  Array.make_matrix 9 9 0
@@ -33,34 +33,7 @@ let is_end_msg brd =
     | 19 -> Array.make_matrix 19 19 0
     | _ -> Array.make_matrix 1 1 0
 
-(*helper function to handicap that gets the offset for adding handicap stones*)
-let get off_set n =
-   match n with
-    | 9  -> (2,n-1)
-    | 13 -> (3,n-1)
-    | 19 -> (3,n-1)
 
-(*helper function to initiate_game that places the handicap stones*)
-  let handicap h n =
-   let (s,n') = off_set n in
-   let b = create n in
-    let rec hand h b =
-      match h with
-      | 0 -> b
-      | 1 -> hand 0 (assign (s) (n'-s) 1 b )
-      | 2 -> hand 1 (assign (n'-s) (s) 1 b )
-      | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
-      | 4 -> hand 3 (assign (s) (s) 1 b )
-      | 5 -> hand 4 (assign (n') (n') 1 b )
-      | _ -> b
-
-  let initiate_game n h =
-   let board = handicap n h in
-  {
-      player = 1;
-      board = board;
-      msg = "Game started"
-    }
 
   let get_pos brd plr =
     let board = brd.board in
@@ -73,35 +46,6 @@ let get off_set n =
       done;
    done;
     !lst
-
-  let assign r c v a =
-    Array.set a.(r) c v;
-      a
-
-  let place brd (r, c) =
-  if not_full brd then
-    let plr = brd.player in
-    let board = brd.board in
-    let size = Array.length board in
-    if r < size && c < size then
-      match board.(r).(c) with
-      | 0 -> {
-               player = (plr mod 2) + 1;
-               board = assign r c plr board;
-               msg = "Stone placed at: ("^(string_of_int  r)^","^(string_of_int  c)^")"
-             }
-      | _ -> {
-               player = plr;
-               board = board;
-               msg = "Position is occupied"
-             }
-    else
-       {
-         player = plr;
-         board = board;
-         msg = "Out of bounds"
-       }
-  else is_end_msg brd
 
 let get_adjacents board (row,col) =
   let neighbors = ref [] in
@@ -157,7 +101,7 @@ let assign r c v a =
     | [] -> a
     | (row,col)::t ->
       if a.(row).(col) = opponent then
-        let group = get_group a (r,c) in
+        let group = get_group a (row,col) in
         if fst group = 0 then
           capture a (snd group);
         cap_terr t
@@ -166,6 +110,75 @@ let assign r c v a =
   in
   cap_terr neighbors
 
+(*helper function to handicap that gets the offset for adding handicap stones*)
+let get off_set n =
+   match n with
+    | 9  -> (2,n-1)
+    | 13 -> (3,n-1)
+    | 19 -> (3,n-1)
+
+(*helper function to initiate_game that places the handicap stones*)
+  let handicap h n =
+   let (s,n') = off_set n in
+   let b = create n in
+    let rec hand h b =
+      match h with
+      | 0 -> b
+      | 1 -> hand 0 (assign (s) (n'-s) 1 b )
+      | 2 -> hand 1 (assign (n'-s) (s) 1 b )
+      | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
+      | 4 -> hand 3 (assign (s) (s) 1 b )
+      | 5 -> hand 4 (assign (n') (n') 1 b )
+      | _ -> b
+
+  let initiate_game n h =
+   let board = handicap n h in
+    {
+      player = 1;
+      board = board;
+      msg = "Game started"
+    }
+
+let place brd (r, c) =
+if not_full brd then
+  let plr = brd.player in
+  let board = brd.board in
+  let size = Array.length board in
+  let adj = get_adjacents board (r,c) in
+  let rec legal l b =
+    match l with
+    | [] -> b
+    | (row,col)::t ->
+      if board.(row).(col) = 1 || board.(row).(col) = 0 then legal t true
+      else legal t b
+  in
+  if r < size && c < size then
+    match board.(r).(c) with
+    | 0 ->
+      if legal adj false then
+        {
+          player = (plr mod 2) + 1;
+          board = assign r c plr board;
+          msg = "Stone placed"
+        }
+      else
+        {
+          player = plr;
+          board = board;
+          msg = "Illegal move"
+        }
+    | _ -> {
+            player = plr;
+            board = board;
+            msg = "Position is occupied"
+           }
+  else
+    {
+     player = plr;
+     board = board;
+     msg = "Out of bounds"
+    }
+else is_end_msg brd
 
 
 (*Helper function that converts a stone representation in board to a string *)
