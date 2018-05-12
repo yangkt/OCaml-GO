@@ -113,7 +113,7 @@ let assign r c v a =
 
 
 (*helper function to handicap that gets the offset for adding handicap stones*)
-let goff_set n =
+let off_set n =
    match n with
     | 9  -> (2,n-1)
     | 13 -> (3,n-1)
@@ -147,7 +147,7 @@ let pass brd =
   {
    player = (brd.player mod 2) + 1 ;
    board = brd.board;
-   mad = "Turn was passed"
+   msg = "Turn was passed"
   }
 
 let place brd (r, c) =
@@ -220,10 +220,6 @@ let to_ascii i =
       done;
     done;
     !counter
-
-  let rec flood_fill (board, still_count) (r,c) plr count_ref =
-    (* Index out of bounds *)
-    if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
 
 let stone_score brd plr =
   List.length (get_pos brd plr)
