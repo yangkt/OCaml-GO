@@ -1,15 +1,4 @@
 
-   (* NOTES:
-    * The element (x,y) of a matrix m is accessed with the notation m.(x).(y).
-    * empty spot  = 0
-      black stone = 1
-      white stone = 2
-
-      possible changes to board
-        - encapsulate the various messages in an variant
-        - let the board change the player after a move
-  *)
-
     type board =
     {
       player : int;
@@ -17,13 +6,29 @@
       msg : string
     }
 
-  (* a function to create a int array array of size [n]X[n] *)
+
+
+(********************** End game checking functions ***************************)
+
+(*no positions left*)
+let not_full brd =
+  let board = brd.board in
+   not (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
+
+(*rewrites the msg field*)
+let is_end_msg brd =
+       {
+         player = 0;
+         board = brd.board;
+         msg = "Game over, board is full"
+       }
+
+  (* a function to create an int array array of size [n]X[n] *)
   let create n =
     match n with
     | 9 ->  Array.make_matrix 9 9 0
     | 13 -> Array.make_matrix 13 13 0
     | 19 -> Array.make_matrix 19 19 0
-    | _ -> failwith "Error: invalid board size"
 
   let initiate_game n = {
       player = 1;
@@ -31,16 +36,6 @@
       msg = "Game started"
     }
 
-  let is_empty b =
-    let board = b.board in
-      let sum = Array.fold_left (fun x_o a_o -> x_o +
-        (Array.fold_left (fun x_i l -> x_i + l) 0 a_o)) 0 board in
-      match sum with
-      | 0 -> true
-      | _ -> false
-
-
-  (* redo with array functions ? *)
   let get_pos brd plr =
     let board = brd.board in
     let lst = ref [] in
@@ -55,17 +50,19 @@
 
   let assign r c v a =
     Array.set a.(r) c v;
-    a
+      a
 
-  let place brd plr (r, c) =
+  let place brd (r, c) =
+  if not_full brd then
+    let plr = brd.player in
     let board = brd.board in
     let size = Array.length board in
     if r < size && c < size then
       match board.(r).(c) with
       | 0 -> {
-               player = plr;
+               player = (plr mod 2) + 1;
                board = assign r c plr board;
-               msg = "Stone placed"
+               msg = "Stone placed at: ("^(string_of_int  r)^","^(string_of_int  c)^")"
              }
       | _ -> {
                player = plr;
@@ -78,6 +75,7 @@
          board = board;
          msg = "Out of bounds"
        }
+  else is_end_msg brd
 
 (*Helper function that converts a stone representation in board to a string *)
  let to_ascii i =
@@ -93,6 +91,9 @@
     Array.fold_left (fun s r -> s^(
       Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
     "" b
+
+
+(************************* Scoring functions **********************************)
 
   let stone_score brd plr =
     let board = brd.board in

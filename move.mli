@@ -1,14 +1,12 @@
 type move = unit
 
-(*
+
   type command =
   | Create of int
   | Surrender
   | Score
   | Pass
   | Place of int * int
-
-*)
 
 
 
