@@ -4,6 +4,5 @@ test:
 clean:
 	ocamlbuild -clean
 
-
-
-
+zip:
+	zip go.zip *.ml*

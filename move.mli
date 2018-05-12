@@ -1,4 +1,11 @@
-type move = unit
+type move =
+  | Create of int * int
+  | Move of int * int
+  | Surrender
+  | Score
+  | Pass
+  | Help
+  | Invalid of string
 
 (*
   type command =

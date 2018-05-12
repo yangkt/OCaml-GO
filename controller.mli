@@ -1,17 +1,16 @@
 type t
 
-(* [init_state n] initializes a game of Go with a empty board of size n*n
+(* [init_game s n] initializes a game of Go with a empty board of size s*s and
+ * n handicapped stones pre-placed on the board. If n is 0, then the handicap
+ * option was not chosen, and the game starts with an empty board.
  * returns: unit*)
-val init_state : int -> unit
+val init_game : int -> int -> Board.t
 
 (* [update_gui b] updates the display with the updated board state after a player
- * has taken a mvoe *)
+ * has taken a move *)
 val update_gui : Board.t -> unit
-
-(* [input i] converts a GUI input into a valid Move type *)
-val input : unit -> Move.t
 
 (* [turn m b] takes another step / turn in the game given the player's move and
  * rhe current state of the board
  * returns: an updated board state after the player has taken the turn *)
-val turn : Move.t -> Board.t -> Board.t
+val turn : string -> Board.t -> Board.t
