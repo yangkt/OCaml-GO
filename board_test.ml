@@ -90,9 +90,9 @@ let board_test = [
 (******************************************************************************
     Test place
 *******************************************************************************)
-  "place on empty" >:: (fun _ -> assert_equal placeMsg ((place brd1 (0,1) ).msg ));
+  (* "place on empty" >:: (fun _ -> assert_equal placeMsg ((place brd1 (0,1) ).msg ));
   "place out of bounds" >:: (fun _ -> assert_equal outofBound ((place brd1 (30,0)).msg) );
-  "place on stone" >:: (fun _ -> assert_equal failMsg (place brd1 (0,0)).msg );
+  "place on stone" >:: (fun _ -> assert_equal failMsg (place brd1 (0,0)).msg ); *)
 
 (******************************************************************************
     Test end of game

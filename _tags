@@ -1,1 +1,1 @@
-true: package(oUnit), package(ANSITerminal), package(str), package(yojson)
+true: package(oUnit), package(ANSITerminal), package(str)
