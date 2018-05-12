@@ -91,7 +91,7 @@ let help_msg () =
 (* [play_game b p] plays one of [p]'s turn based on the current board and the
  * command typed in. Repeats until game is over. *)
 let rec play_game board p =
-  print_endline "Player 0, make a move";
+  print_endline ("Player "^string_of_int(p)^", make a move");
   print_string "> ";
   let str = read_line () in
   let cmd = parse str in
