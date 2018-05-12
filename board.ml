@@ -56,17 +56,78 @@ let get_pos brd plr =
   let board = brd.board in
   get_pos_array board plr
 
+let get_adjacents board (row,col) =
+  let neighbors = ref [] in
+  if (row > 0) then
+    neighbors := (row-1,col)::(!neighbors);
+  if (col > 0) then
+    neighbors := (row,col-1)::(!neighbors);
+  if (row < (Array.length board) - 1) then
+    neighbors := (row+1,col)::(!neighbors);
+  if (col < (Array.length board) - 1) then
+    neighbors := (row,col+1)::(!neighbors);
+  !neighbors
+
+
+let get_group board pos =
+  let size = Array.length board in
+  let color = board.(fst pos).(snd pos) in
+  let visited = Array.make_matrix size size false in
+  let v_list = ref [] in
+  let liberties = ref 0 in
+  let queue = ref [pos] in
+  let rec bfs q libs v_l =
+    match !q with
+    | [] -> libs, v_l
+    | (r,c)::t ->
+      q := t;
+      if visited.(r).(c) then
+        bfs q libs v_l
+      else
+        let neighbors = get_adjacents board (r,c) in
+        if board.(r).(c) = 0 then incr libs;
+        if board.(r).(c) = color then
+          (q := neighbors@(!q);
+           v_l := (r,c)::(!v_l));
+        visited.(r).(c) <- true;
+        bfs q libs v_l
+  in
+  let (l,v) = bfs queue liberties v_list in
+  !l, !v
+
+let rec capture board grp =
+  match grp with
+  | [] -> ()
+  | (r,c)::t ->
+    board.(r).(c) <- 0;
+    capture board t
+
 let assign r c v a =
   Array.set a.(r) c v;
-  a
+  let opponent = (v mod 2) + 1 in
+  let neighbors = get_adjacents a (r,c) in
+  let rec cap_terr l =
+    match l with
+    | [] -> a
+    | (row,col)::t ->
+      if a.(row).(col) = opponent then
+        let group = get_group a (r,c) in
+        if fst group = 0 then
+          capture a (snd group);
+        cap_terr t
+      else
+        cap_terr t
+  in
+  cap_terr neighbors
 
-let place brd plr (r, c) =
+let place brd (r, c) =
+  let plr = brd.player in
   let board = brd.board in
   let size = Array.length board in
   if r < size && c < size then
     match board.(r).(c) with
     | 0 -> {
-            player = plr;
+            player = (plr mod 2) + 1;
             board = assign r c plr board;
             msg = "Stone placed"
            }
@@ -74,7 +135,7 @@ let place brd plr (r, c) =
             player = plr;
             board = board;
             msg = "Position is occupied"
-         }
+           }
   else
     {
      player = plr;
@@ -88,7 +149,6 @@ let to_ascii i =
   | 0 -> "."
   | 1 -> "X"
   | 2 -> "O"
-  | -1 -> "/"
   | _ -> failwith "Error: Improper representation"
 
 let board_to_string brd =
@@ -121,9 +181,9 @@ let rec flood_fill (board, still_count) (r,c) plr count_ref =
       let right = flood_fill left (r,c+1) plr count_ref in
       right
 
-(* Find an empty position on board. If no empty positions, raise Not_found *)
-let find_empty arr =
-  get_pos_array arr 0
+(* Find positions of [plr] *)
+let find_pos arr plr =
+  get_pos_array arr plr
 
 let copy_matrix m =
   let n = Array.make_matrix 9 9 0 in
@@ -142,9 +202,9 @@ let territory_score brd plr =
   let size = Array.length board in
   let temp_board = copy_matrix board in
   let count = ref 0 in
-  while (List.length (find_empty temp_board) <> 0) do
+  while (List.length (find_pos temp_board 0) <> 0) do
     let prev_count = !count in
-    let pos = List.hd (find_empty temp_board) in
+    let pos = List.hd (find_pos temp_board 0) in
     let new_board = flood_fill (temp_board, true) pos plr count in
     if ((snd new_board) && (!count) - prev_count < size * size / 2) = false then
       count := prev_count;

@@ -90,9 +90,9 @@ let board_test = [
 (******************************************************************************
     Test place
 *******************************************************************************)
-  "place on empty" >:: (fun _ -> assert_equal placeMsg ((place brd1 1 (0,1) ).msg ));
+  (* "place on empty" >:: (fun _ -> assert_equal placeMsg ((place brd1 (0,1) ).msg ));
   "place out of bounds" >:: (fun _ -> assert_equal outofBound ((place brd1 1 (30,0)).msg) );
-  "place on stone" >:: (fun _ -> assert_equal failMsg (place brd1 1 (0,0)).msg );
+  "place on stone" >:: (fun _ -> assert_equal failMsg (place brd1 1 (0,0)).msg ); *)
 
 
 (******************************************************************************
@@ -103,6 +103,7 @@ let board_test = [
  "stone_score empty_only_for_white" >:: (fun _ -> assert_equal 0 (stone_score brd3 2) );
  "stone_score" >:: (fun _ -> assert_equal 6 (stone_score brd3 1) );
  "territory_score" >:: (fun _ -> assert_equal 16 (territory_score brd2 1));
+ "territory_score" >:: (fun _ -> assert_equal 12 (territory_score brd2 2));
 ]
 
 

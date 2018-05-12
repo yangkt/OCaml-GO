@@ -26,7 +26,7 @@ val get_pos : board -> int -> (int*int) list
  * int int pair represents (row, column)
  * if the placement is invalid in any way, the original board is returned with
  * a descriptive message in the msg field.  *)
-val place : board -> int -> (int*int) -> board
+val place : board -> (int*int) -> board
 
 (* [territory_score brd plr] calculates the score from purely territory on the
  * board [brd] for player [plr] *)
@@ -52,3 +52,5 @@ val assign : int -> int -> int -> int array array -> int array array
 
 (* [copy_matrix m] returns a deep copy of matrix [m]*)
 val copy_matrix : int array array -> int array array
+
+val get_group : int array array -> int * int -> int * (int * int) list
