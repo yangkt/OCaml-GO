@@ -111,7 +111,7 @@ let assign r c v a =
     | [] -> a
     | (row,col)::t ->
       if a.(row).(col) = opponent then
-        let group = get_group a (r,c) in
+        let group = get_group a (row,col) in
         if fst group = 0 then
           capture a (snd group);
         cap_terr t
@@ -124,13 +124,29 @@ let place brd (r, c) =
   let plr = brd.player in
   let board = brd.board in
   let size = Array.length board in
+  let adj = get_adjacents board (r,c) in
+  let rec legal l b =
+    match l with
+    | [] -> b
+    | (row,col)::t ->
+      if board.(row).(col) = 1 || board.(row).(col) = 0 then legal t true
+      else legal t b
+  in
   if r < size && c < size then
     match board.(r).(c) with
-    | 0 -> {
-            player = (plr mod 2) + 1;
-            board = assign r c plr board;
-            msg = "Stone placed"
-           }
+    | 0 ->
+      if legal adj false then
+        {
+          player = (plr mod 2) + 1;
+          board = assign r c plr board;
+          msg = "Stone placed"
+        }
+      else
+        {
+          player = plr;
+          board = board;
+          msg = "Illegal move"
+        }
     | _ -> {
             player = plr;
             board = board;
