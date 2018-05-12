@@ -104,7 +104,7 @@ let rec play_game board p =
       else
         (print_endline ("Your stone has been placed at (" ^ (string_of_int i1) ^
         ", " ^ (string_of_int i2) ^ ")."); play_game board' p)
-  | Score -> print_endline (score op); play_game board' p
+  | Score -> print_endline (string_of_int (score board p)); play_game board' p
   | Help -> print_endline (help_msg ()); play_game board' p
   | Display -> print_endline (board_to_string board); play_game board' p
   | Invalid -> play_game board' p
@@ -116,7 +116,6 @@ let main () =
   print_endline "Please enter the size of the board you wish to play on
     (9, 13, 19).\n";
   print_string  "> ";
-  () |> read_line |> initiate_game |> play_game
-  (* let n = read_line () in
-  let board = initiate_game n in
-     play_game board *)
+  let n = read_line () in
+  let board = initiate_game (int_of_string n) in
+  play_game board

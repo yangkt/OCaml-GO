@@ -4,10 +4,6 @@ open GObj
 
 let locale = GtkMain.Main.init ()
 
-
-
-
-
 let main () =
   let window = GWindow.window ~width:1000 ~height:700
       ~title:"Go" () in
@@ -64,6 +60,8 @@ let main () =
 let update_player p =
   failwith "Unimplemented"
 
+
+
 let update_message m =
   failwith "Unimplemented"
 
@@ -76,9 +74,8 @@ let draw_rectangle (drawable : GDraw.drawable)
   let width = tr_x - ll_x in
   let height = tr_y - ll_y in
   drawable#set_foreground (`NAME fill_col);
-  drawable#rectangle ~x:ll_x ~y:ll_y ~width ~height ~filled:true ();
-  drawable#set_foreground `BLACK;
-  drawable#rectangle ~x:ll_x ~y:ll_y ~width ~height ~filled:false ()
+  drawable#rectangle ~x:ll_x ~y:ll_y ~width ~height ~filled:true ()
+  (*drawable#rectangle ~x:ll_x ~y:ll_y ~width ~height ~filled:false ()*)
 
 let draw_board arr =
   failwith "Unimplemented"
