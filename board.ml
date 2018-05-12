@@ -26,8 +26,6 @@ let is_end_msg brd =
        }
 
 
-
-
   let get_pos brd plr =
     let board = brd.board in
     let lst = ref [] in
@@ -144,6 +142,13 @@ let goff_set n =
       board = board;
       msg = "Game started"
     }
+
+let pass brd =
+  {
+   player = (brd.player mod 2) + 1 ;
+   board = brd.board;
+   mad = "Turn was passed"
+  }
 
 let place brd (r, c) =
 if not_full brd then
