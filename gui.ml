@@ -51,8 +51,18 @@ let init () =
   display_score (vbox) (0) (0);
 
   (*Board display*)
-  (*let drawable = GObj.drawable ~packing:vbox#pack () in
-  draw_rectangle drawable 0 0 400 400;*)
+  let area = GMisc.drawing_area ~width:(100) ~height:(400)
+    ~packing:vbox#add () in
+  let drawing = area#misc#realize ();
+    new GDraw.drawable (area#misc#window) in
+    let style = area#misc#style#copy in
+    style#set_bg [`NORMAL,`WHITE];
+    area#misc#set_style style;
+    drawing#set_background `BLACK;
+    drawing#set_foreground `BLACK;
+    drawing#rectangle ~filled:true ~x:(200) ~y:(200) ~width:100 ~height:200 ();
+  (*let drawable = new GDraw.drawable () in
+    draw_rectangle drawable 0 0 400 400;*)
 
 
   let bsize = new GMenu.factory board_menu ~accel_group in
