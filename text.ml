@@ -111,8 +111,6 @@ let rec play_game board p =
 
 
 let main () =
-  ANSITerminal.(print_string [red]
-    "\n\nWelcome to the 3110 Text Adventure Game engine.\n");
   print_endline "Please enter the size of the board you wish to play on
     (9, 13, 19).\n";
   print_string  "> ";
