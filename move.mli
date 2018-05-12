@@ -1,6 +1,7 @@
+
 type move =
   | Create of int * int
-  | Move of int * int
+  | Place of int * int
   | Surrender
   | Score
   | Pass
@@ -8,12 +9,12 @@ type move =
   | Invalid of string
 
 
-  type command =
+(*  type command =
   | Create of int
   | Surrender
   | Score
   | Pass
-  | Place of int * int
+  | Place of int * int *)
 
 
 

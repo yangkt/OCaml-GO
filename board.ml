@@ -153,7 +153,7 @@ let initiate_game n h =
 
 (***************Functions that update board based on a turn********************)
 
-let valid_coords c n =
+let valid_c c n =
   c > -1 && c < n
 
 let pass brd =
@@ -176,7 +176,7 @@ let place brd (r, c) =
         if board.(row).(col) = 1 || board.(row).(col) = 0 then legal t true
         else legal t b
     in
-    if (size -r) <= size && (size-c) <= size then
+    if (valid_c r size) && (valid_c c size) then
       match board.(r).(c) with
       | 0 ->
         if legal adj false then

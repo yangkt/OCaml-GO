@@ -1,3 +1,4 @@
+
 open Board
 
 type result
@@ -17,4 +18,4 @@ val update_gui : Board.t -> unit
 (* [turn m b] takes another step / turn in the game given the player's move and
  * rhe current state of the board
  * returns: an updated board state after the player has taken the turn *)
-val turn : string -> Board.t -> Board.t
+val turn : string -> Board.t -> result
