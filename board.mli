@@ -7,11 +7,11 @@ type board = {
   msg : string
 }
 
-(* [initiate_game n] initiates the game.
+(* [initiate_game n h] initiates the game.
  * creates a board of size [n] with all entries set to 0 and sets the player
- * to [1], or black.
+ * to [1], or black, and h stones
  * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
-val initiate_game : int -> board
+val initiate_game : int -> int -> board
 
 (* [is_empty] checks to see if the board is empty
  * returns true if there are no pieces on the board
