@@ -59,7 +59,7 @@ let parse s =
  * player [p]'s stones. *)
 let update board cmd p =
   match cmd with
-  | Move (x, y) -> place board p (x, y)
+  | Move (x, y) -> place board (x, y)
   | Score | Help | Display | Invalid -> board
 
 (* [assign x y board p] places a stone from [p] onto [board] on the corner
@@ -68,7 +68,7 @@ let update board cmd p =
  * returns: a status message describing whether the move for placing the stone
  * was invalid / move was successful. *)
 let assign x y board p =
-  let board' = place board p (x, y) in
+  let board' = place board (x, y) in
   let message = board'.msg in
   if message = "Position is Occupied" || message = "Out of bounds" then
     "invalid move"
@@ -117,5 +117,5 @@ let main () =
     (9, 13, 19).\n";
   print_string  "> ";
   let n = read_line () in
-  let board = initiate_game (int_of_string n) in
-  play_game board
+  let board = initiate_game (int_of_string n) 0 in
+  play_game board 1
