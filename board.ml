@@ -10,9 +10,9 @@ type board =
 (********************** End game checking functions ***************************)
 
 (*no positions left*)
-let not_full brd =
+let rec not_full brd =
   let board = brd.board in
-   not (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
+    (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
 
 (*rewrites the msg field*)
 let is_end_msg brd =
@@ -183,7 +183,7 @@ let place brd (r, c) =
           {
             player = (plr mod 2) + 1;
             board = assign r c plr board;
-            msg = "Stone placed"
+            msg = "Stone placed at: ("^(string_of_int r)^","^(string_of_int c)^")"
           }
         else
           {

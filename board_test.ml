@@ -74,7 +74,7 @@ let brd3 = {
 
 let outofBound = "Out of bounds"
 let placeMsg = "Stone placed at: (0,1)"
-let failMsg = "Position is occupied"
+let occ = "Position is occupied"
 
 let get_pos_place = [(5,5);(4,4);(3,3);(2,2);(1,1);(0,1);(0,0)]
 
@@ -91,16 +91,16 @@ let board_test = [
 (******************************************************************************
     Test place
 *******************************************************************************)
-  "place on empty" >:: (fun _ -> assert_equal placeMsg ((place brd1 (0,1) ).msg ));
-  "place out of bounds" >:: (fun _ -> assert_equal outofBound ((place brd1 (30,0)).msg) );
-  "place on stone" >:: (fun _ -> assert_equal failMsg (place brd1 (0,0)).msg );
+  "place on empty" >:: (fun _ -> assert_equal placeMsg (place brd1 (0,1)).msg );
+  "place out of bounds" >:: (fun _ -> assert_equal outofBound (place brd1 (30,0)).msg );
+  "place on stone" >:: (fun _ -> assert_equal occ (place brd1 (0,0)).msg );
 
 
 (******************************************************************************
     Test end of game
 *******************************************************************************)
-  "full board" >:: (fun _ -> assert_equal true (not_full f_brd9));
-  "empty board" >:: (fun _ -> assert_equal false (not_full brd1) );
+  "full board" >:: (fun _ -> assert_equal false (not_full f_brd9));
+  "empty board" >:: (fun _ -> assert_equal true (not_full brd1) );
 
 (******************************************************************************
     Test score
