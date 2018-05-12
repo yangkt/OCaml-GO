@@ -1,5 +1,6 @@
-type t
+open Board
 
+type t
 
 (* [draw_board (s, w, b)] updates the board with size [s] displayed on the GUI
  * by drawing all the white stones in [w] and black stones in [b]*)

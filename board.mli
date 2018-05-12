@@ -7,6 +7,12 @@ type board = {
   msg : string
 }
 
+(* [initiate_game n h] initiates the game.
+ * creates a board of size [n] with all entries set to 0 and sets the player
+ * to [1], or black, and h stones
+ * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
+val initiate_game : int -> int -> board
+
 (* [not_full] *)
 val not_full : board -> bool
 
@@ -54,4 +60,3 @@ val assign : int -> int -> int -> int array array -> int array array
 val copy_matrix : int array array -> int array array
 
 val get_group : int array array -> int * int -> int * (int * int) list
-
