@@ -167,7 +167,10 @@ let init () =
     area#misc#set_style style;
     drawing#set_background `BLACK;
     drawing#set_foreground `BLACK;
-    drawing#rectangle ~filled:true ~x:(200) ~y:(200) ~width:100 ~height:200 ();
+drawing#rectangle ~filled:true ~x:(200) ~y:(200)
+        ~width:100 ~height:200 ();
+
+
   (*let drawable = new GDraw.drawable () in
     draw_rectangle drawable 0 0 400 400;*)
 
