@@ -1,60 +1,51 @@
 
-(* NOTES:
-* The element (x,y) of a matrix m is accessed with the notation m.(x).(y).
-* empty spot  = 0
-black stone = 1
-white stone = 2
 
-possible changes to board
-  - encapsulate the various messages in an variant
-  - let the board change the player after a move
-*)
+    type board =
+    {
+      player : int;
+      board : int array array;
+      msg : string
+    }
 
-type board =
-  {
-    player : int;
-    board : int array array;
-    msg : string
-  }
 
-(* a function to create a int array array of size [n]X[n] *)
-let create n =
-  match n with
-  | 9 ->  Array.make_matrix 9 9 0
-  | 13 -> Array.make_matrix 13 13 0
-  | 19 -> Array.make_matrix 19 19 0
-  | _ -> failwith "Error: invalid board size"
 
-let initiate_game n =
-  {
-    player = 1;
-    board = create n;
-    msg = "Game started"
-  }
 
-let is_empty b =
-  let board = b.board in
-  let sum = Array.fold_left (fun x_o a_o -> x_o +
-    (Array.fold_left (fun x_i l -> x_i + l) 0 a_o)) 0 board in
-  match sum with
-  | 0 -> true
-  | _ -> false
+(********************** End game checking functions ***************************)
 
-let get_pos_array arr plr =
-  let lst = ref [] in
-  for r = 0 to  (Array.length arr)-1 do
-    for c = 0 to (Array.length arr)-1 do
-      if arr.(r).(c) = plr then
-        lst := (r,c)::(!lst)
-      else ()
-    done;
-  done;
-  !lst
-
-(* redo with array functions ? *)
-let get_pos brd plr =
+(*no positions left*)
+let not_full brd =
   let board = brd.board in
-  get_pos_array board plr
+   not (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
+
+(*rewrites the msg field*)
+let is_end_msg brd =
+       {
+         player = 0;
+         board = brd.board;
+         msg = "Game over, board is full"
+       }
+
+  (* a function to create an int array array of size [n]x[n] *)
+  let create n =
+    match n with
+    | 9 ->  Array.make_matrix 9 9 0
+    | 13 -> Array.make_matrix 13 13 0
+    | 19 -> Array.make_matrix 19 19 0
+    | _ -> Array.make_matrix 1 1 0
+
+
+
+  let get_pos brd plr =
+    let board = brd.board in
+    let lst = ref [] in
+    for r = 0 to  (Array.length board)-1 do
+      for c = 0 to (Array.length board)-1 do
+        if board.(r).(c) = plr then
+          lst := (r,c)::(!lst)
+          else ()
+      done;
+   done;
+    !lst
 
 let get_adjacents board (row,col) =
   let neighbors = ref [] in
@@ -67,7 +58,6 @@ let get_adjacents board (row,col) =
   if (col < (Array.length board) - 1) then
     neighbors := (row,col+1)::(!neighbors);
   !neighbors
-
 
 let get_group board pos =
   let size = Array.length board in
@@ -111,7 +101,7 @@ let assign r c v a =
     | [] -> a
     | (row,col)::t ->
       if a.(row).(col) = opponent then
-        let group = get_group a (r,c) in
+        let group = get_group a (row,col) in
         if fst group = 0 then
           capture a (snd group);
         cap_terr t
@@ -120,17 +110,63 @@ let assign r c v a =
   in
   cap_terr neighbors
 
+(*helper function to handicap that gets the offset for adding handicap stones*)
+let get off_set n =
+   match n with
+    | 9  -> (2,n-1)
+    | 13 -> (3,n-1)
+    | 19 -> (3,n-1)
+
+(*helper function to initiate_game that places the handicap stones*)
+  let handicap h n =
+   let (s,n') = off_set n in
+   let b = create n in
+    let rec hand h b =
+      match h with
+      | 0 -> b
+      | 1 -> hand 0 (assign (s) (n'-s) 1 b )
+      | 2 -> hand 1 (assign (n'-s) (s) 1 b )
+      | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
+      | 4 -> hand 3 (assign (s) (s) 1 b )
+      | 5 -> hand 4 (assign (n') (n') 1 b )
+      | _ -> b
+
+  let initiate_game n h =
+   let board = handicap n h in
+    {
+      player = 1;
+      board = board;
+      msg = "Game started"
+    }
+
 let place brd (r, c) =
+if not_full brd then
   let plr = brd.player in
   let board = brd.board in
   let size = Array.length board in
+  let adj = get_adjacents board (r,c) in
+  let rec legal l b =
+    match l with
+    | [] -> b
+    | (row,col)::t ->
+      if board.(row).(col) = 1 || board.(row).(col) = 0 then legal t true
+      else legal t b
+  in
   if r < size && c < size then
     match board.(r).(c) with
-    | 0 -> {
-            player = (plr mod 2) + 1;
-            board = assign r c plr board;
-            msg = "Stone placed"
-           }
+    | 0 ->
+      if legal adj false then
+        {
+          player = (plr mod 2) + 1;
+          board = assign r c plr board;
+          msg = "Stone placed"
+        }
+      else
+        {
+          player = plr;
+          board = board;
+          msg = "Illegal move"
+        }
     | _ -> {
             player = plr;
             board = board;
@@ -142,6 +178,8 @@ let place brd (r, c) =
      board = board;
      msg = "Out of bounds"
     }
+else is_end_msg brd
+
 
 (*Helper function that converts a stone representation in board to a string *)
 let to_ascii i =
@@ -151,11 +189,30 @@ let to_ascii i =
   | 2 -> "O"
   | _ -> failwith "Error: Improper representation"
 
-let board_to_string brd =
-  let b = brd.board in
-  Array.fold_left (fun s r -> s^(
-  Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
-  "" b
+  let board_to_string brd =
+   let b = brd.board in
+    Array.fold_left (fun s r -> s^(
+      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
+    "" b
+
+
+(************************* Scoring functions **********************************)
+
+  let stone_score brd plr =
+    let board = brd.board in
+    let size = Array.length board in
+    let int_of_bool b = if b then 1 else 0 in
+    let counter = ref 0 in
+    for i = 0 to size - 1 do
+      for j = 0 to size - 1 do
+        counter := !counter + (int_of_bool (board.(i).(j) == plr))
+      done;
+    done;
+    !counter
+
+  let rec flood_fill (board, still_count) (r,c) plr count_ref =
+    (* Index out of bounds *)
+    if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
 
 let stone_score brd plr =
   List.length (get_pos brd plr)

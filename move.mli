@@ -7,15 +7,13 @@ type move =
   | Help
   | Invalid of string
 
-(*
+
   type command =
   | Create of int
   | Surrender
   | Score
   | Pass
   | Place of int * int
-
-*)
 
 
 

@@ -13,10 +13,16 @@ type board = {
  * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
 val initiate_game : int -> int -> board
 
-(* [is_empty] checks to see if the board is empty
- * returns true if there are no pieces on the board
- * returns false if there are pieces on the board *)
-val is_empty : board -> bool
+(* [not_full] *)
+val not_full : board -> bool
+
+val pass : board -> board
+
+(* [initiate_game n] initiates the game.
+ * creates a board of size [n] with all entries set to 0 and sets the player
+ * to [1], or black. the [h] argument
+ *  *)
+val initiate_game : int -> int -> board
 
 (* [get_pos] returns a list of positions of the pieces of a given color
  * returns empty list of no pieces are on the board *)
