@@ -1,5 +1,4 @@
 
-
 (* represents the board for go*)
 type board = {
   player : int;
@@ -11,11 +10,16 @@ type board = {
 (* [not_full] checks that [brd] is not full with stones *)
 val not_full : board -> bool
 
-(* val pass : board -> board *)
+(* [pass] passes the player's turn *)
+val pass : board -> board
+
+(* [initiate_game n] initiates the game.
+ * creates a board of size [n] with all entries set to 0 and sets the player
+ * to [1], or black. the [h] argument represents the number of handicaps that will
+ * be placed at board initiation *)
+val initiate_game : int -> int -> board
 
 val create : int -> int array array
-
-val pass : board -> board
 
 
 (* [initiate_game n] initiates the game.
@@ -23,8 +27,6 @@ val pass : board -> board
  * to [1], or black. the [h] argument
  *  *)
 val initiate_game : int -> int -> board
-
-
 
 (* [get_pos] returns a list of positions of the pieces of a given color
  * returns empty list of no pieces are on the board *)

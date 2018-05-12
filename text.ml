@@ -1,3 +1,4 @@
+
 open Board
 
 (* NOTES:
@@ -98,12 +99,7 @@ let rec play_game board p =
   let board' = update board cmd p in
   match cmd with
   | Move (i1, i2) ->
-      let status = assign i1 i2 board p in
-      if status = "invalid move" then
-        (print_endline "Your move was invalid."; play_game board' p)
-      else
-        (print_endline ("Your stone has been placed at (" ^ (string_of_int i1) ^
-        ", " ^ (string_of_int i2) ^ ")."); play_game board' p)
+      let status = print_endline board'.msg
   | Score -> print_endline (string_of_int (score board p)); play_game board' p
   | Help -> print_endline (help_msg ()); play_game board' p
   | Display -> print_endline (board_to_string board); play_game board' p

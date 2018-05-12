@@ -1,3 +1,4 @@
+
 type move =
   | Create of int * int
   | Move of int * int
@@ -57,3 +58,4 @@ let parse s =
     | (-1, -1) -> Invalid ("position must be a valid integer location")
     | _ -> Move (x, y)
   else Invalid ("invalid move.")
+
