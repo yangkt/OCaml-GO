@@ -91,7 +91,7 @@ let help_msg () =
 (* [play_game b p] plays one of [p]'s turn based on the current board and the
  * command typed in. Repeats until game is over. *)
 let rec play_game board p =
-  print_endline "Player 0, make a move";
+  print_endline ("Player "^string_of_int(p)^", make a move");
   print_string "> ";
   let str = read_line () in
   let cmd = parse str in
@@ -111,8 +111,6 @@ let rec play_game board p =
 
 
 let main () =
-  ANSITerminal.(print_string [red]
-    "\n\nWelcome to the 3110 Text Adventure Game engine.\n");
   print_endline "Please enter the size of the board you wish to play on
     (9, 13, 19).\n";
   print_string  "> ";
