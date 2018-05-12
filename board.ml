@@ -34,18 +34,20 @@ let is_end_msg brd =
     | _ -> Array.make_matrix 1 1 0
 
 
+let get_pos_array arr plr =
+  let lst = ref [] in
+  for r = 0 to  (Array.length arr)-1 do
+    for c = 0 to (Array.length arr)-1 do
+      if arr.(r).(c) = plr then
+        lst := (r,c)::(!lst)
+      else ()
+    done;
+  done;
+  !lst
 
-  let get_pos brd plr =
-    let board = brd.board in
-    let lst = ref [] in
-    for r = 0 to  (Array.length board)-1 do
-      for c = 0 to (Array.length board)-1 do
-        if board.(r).(c) = plr then
-          lst := (r,c)::(!lst)
-          else ()
-      done;
-   done;
-    !lst
+let get_pos brd plr =
+  let board = brd.board in
+  get_pos_array board plr
 
 let get_adjacents board (row,col) =
   let neighbors = ref [] in
@@ -111,15 +113,16 @@ let assign r c v a =
   cap_terr neighbors
 
 (*helper function to handicap that gets the offset for adding handicap stones*)
-let get off_set n =
+let get_off_set n =
    match n with
     | 9  -> (2,n-1)
     | 13 -> (3,n-1)
     | 19 -> (3,n-1)
+    | _ -> (0, 0)
 
 (*helper function to initiate_game that places the handicap stones*)
-  let handicap h n =
-   let (s,n') = off_set n in
+  (* let handicap h n =
+   let (s,n') = get_off_set n in
    let b = create n in
     let rec hand h b =
       match h with
@@ -129,15 +132,15 @@ let get off_set n =
       | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
       | 4 -> hand 3 (assign (s) (s) 1 b )
       | 5 -> hand 4 (assign (n') (n') 1 b )
-      | _ -> b
+      | _ -> b *)
 
-  let initiate_game n h =
+  (* let initiate_game n h =
    let board = handicap n h in
     {
       player = 1;
       board = board;
       msg = "Game started"
-    }
+    } *)
 
 let place brd (r, c) =
 if not_full brd then
@@ -197,22 +200,6 @@ let to_ascii i =
 
 
 (************************* Scoring functions **********************************)
-
-  let stone_score brd plr =
-    let board = brd.board in
-    let size = Array.length board in
-    let int_of_bool b = if b then 1 else 0 in
-    let counter = ref 0 in
-    for i = 0 to size - 1 do
-      for j = 0 to size - 1 do
-        counter := !counter + (int_of_bool (board.(i).(j) == plr))
-      done;
-    done;
-    !counter
-
-  let rec flood_fill (board, still_count) (r,c) plr count_ref =
-    (* Index out of bounds *)
-    if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
 
 let stone_score brd plr =
   List.length (get_pos brd plr)

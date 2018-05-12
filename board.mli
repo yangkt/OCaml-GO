@@ -11,18 +11,22 @@ type board = {
  * creates a board of size [n] with all entries set to 0 and sets the player
  * to [1], or black, and h stones
  * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
-val initiate_game : int -> int -> board
+(* val initiate_game : int -> int -> board *)
 
 (* [not_full] *)
 val not_full : board -> bool
 
-val pass : board -> board
+(* val pass : board -> board *)
+
+val create : int -> int array array
 
 (* [initiate_game n] initiates the game.
  * creates a board of size [n] with all entries set to 0 and sets the player
  * to [1], or black. the [h] argument
  *  *)
-val initiate_game : int -> int -> board
+(* val initiate_game : int -> int -> board *)
+
+
 
 (* [get_pos] returns a list of positions of the pieces of a given color
  * returns empty list of no pieces are on the board *)
