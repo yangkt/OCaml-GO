@@ -8,7 +8,7 @@ type result =
 
 type control = {
   previous : Board.t;
-  surrender : bool
+  pass : bool
 }
 
 let init_state n h =
@@ -18,7 +18,7 @@ let init_state n h =
     else
       Exception ("Invalid board size-- must be 9, 13, or 19")
   else
-    Exception ("Number of handicap stones must NOT be more than 5,")
+    Exception ("Number of handicap stones must NOT be more than 5")
 
 let update_gui b =
   let message = b.msg in
@@ -33,3 +33,14 @@ let update_gui b =
     update_player (string_of_int p);
     update_message message;
     update_gui b
+
+let turn cmd b =
+  let move = Move.parse cmd in
+  match move with
+  | Create (s, h) -> Exception "creating board in midst of game lmao"
+  | Move (x, y) -> Board (place b (x, y))
+  | Surrender -> Exception "lol what"
+  | Score -> Exception "idk what to do ahahahaha"
+  | Pass -> Exception "bleh"
+  | Help -> Exception "help message HAHAHA oops"
+  | Invalid s -> Exception s

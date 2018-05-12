@@ -1,5 +1,5 @@
 type move =
-  | Create of int
+  | Create of int * int
   | Move of int * int
   | Surrender
   | Score
@@ -23,34 +23,37 @@ let parse s =
     Score
 
   else if (String.sub cmd 0 6 = "create") then
-    let str = String.sub cmd 7 ((String.length cmd) - 7) in
-    let i =
-      try int_of_string str
-      with _ -> -1
+    let constants = String.sub cmd 7 ((String.length cmd) - 7) in
+    let space = String.index constants ' ' in
+    let s1 = String.sub constants 0 space in
+    let s2 = String.sub constants
+        (space + 1) ((String.length constants) - (space+1)) in
+    let (i1, i2) = (int_of_string_opt s1, int_of_string_opt s2) in
+    let (size, handicap) =
+      match (i1, i2) with
+      | (Some s, Some h) -> (s, h)
+      | (None, Some h) -> (-1, 0)
+      | (Some s, None) -> (0, -1)
+      | (None, None) -> (-1, -1)
     in
-    if i = -1 then
-      Invalid ("board size must be an integer")
-    else
-    if i = 9 || i = 13 || i = 19  then
-      Create i
-    else Invalid ("board size must be 9, 13, or 19.")
+    match (size, handicap) with
+    | (-1, 0) -> Invalid ("size of board must be an integer")
+    | (0, -1) -> Invalid ("number of handicap stones must be an integer")
+    | (-1, -1) -> Invalid ("size + handicap stones must be integers")
+    | _ -> Create (size, handicap)
 
   else if (String.sub cmd 0 5 = "place") then
     let str = String.sub cmd 6 ((String.length cmd) - 6) in
     let space = String.index str ' ' in
     let s1 = String.sub str 0 space in
     let s2 = String.sub str (space + 1) ((String.length str) - (space+1)) in
-    let i1 =
-      try int_of_string s1
-      with _ -> -1
+    let (i1, i2) = (int_of_string_opt s1, int_of_string_opt s2) in
+    let (x, y) =
+      match (i1, i2) with
+      | (Some x', Some y') -> (x', y')
+      | _ -> (-1, -1)
     in
-    let i2 =
-      try int_of_string s2
-      with _ -> -1
-    in
-    if i1 = -1 || i2 = -1 then
-      Invalid ("position must be a locatin on the board")
-    else
-      Move (i1, i2)
-
+    match (x, y) with
+    | (-1, -1) -> Invalid ("position must be a valid integer location")
+    | _ -> Move (x, y)
   else Invalid ("invalid move.")
