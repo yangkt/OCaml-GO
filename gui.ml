@@ -10,7 +10,10 @@ let get_string n =
 
 (* update the players' scores with [score1] and [score2] and display in
    [space] *)
+    (**********FIGURE OUT PACKING***********************)
 let display_score space score1 score2 =
+let hbox_score = GPack.hbox ~packing:space#add in
+space#connect#destroy  ~callback:Main.quit;
   let s1 = "Player 1 Score: "^(get_string score1) in
   let s2 = "Player 2 Score: "^(get_string score2) in
   GMisc.label ~text:s1 ~packing:space#add ();
@@ -18,7 +21,7 @@ let display_score space score1 score2 =
 
 (*fill_col   drawable#set_foreground (`NAME fill_col);
 *)
-let draw_rectangle (drawable) ll_x ll_y tr_x tr_y =
+let draw_rectangle (drawable) size ll_x ll_y tr_x tr_y =
   let width = tr_x - ll_x in
   let height = tr_y - ll_y in
   drawable#rectangle ~x:ll_x ~y:ll_y ~width:width ~height:height ~filled: true ()
@@ -31,8 +34,8 @@ let init () =
       ~title:"Go" () in
   let vbox = GPack.vbox ~packing:window#add () in
   window#connect#destroy ~callback:Main.quit;
-  let hbox_score = GPack.hbox ~packing:vbox#add in
-  vbox#connect#destroy  ~callback:Main.quit;
+  let hbox = GPack.hbox ~packing:window#add () in
+  window#connect#destroy ~callback:Main.quit;
 
   (* Menu bar *)
   let menubar = GMenu.menu_bar ~packing:vbox#pack () in
@@ -45,7 +48,7 @@ let init () =
   factory#add_item "Quit" ~key:_Q ~callback: Main.quit;
 
  (* Score display *)
-  display_score (hbox_score) (0) (0);
+  display_score (vbox) (0) (0);
 
   (*Board display*)
   (*let drawable = GObj.drawable ~packing:vbox#pack () in
