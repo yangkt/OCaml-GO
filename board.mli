@@ -16,8 +16,8 @@ val pass : board -> board
 
 (* [initiate_game n] initiates the game.
  * creates a board of size [n] with all entries set to 0 and sets the player
- * to [1], or black. the [h] argument
- *  *)
+ * to [1], or black. the [h] argument represents the number of handicaps that will
+ * be placed at board initiation *)
 val initiate_game : int -> int -> board
 
 (* [get_pos] returns a list of positions of the pieces of a given color
