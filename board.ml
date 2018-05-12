@@ -25,13 +25,6 @@ let is_end_msg brd =
          msg = "Game over, board is full"
        }
 
-  (* a function to create an int array array of size [n]x[n] *)
-  let create n =
-    match n with
-    | 9 ->  Array.make_matrix 9 9 0
-    | 13 -> Array.make_matrix 13 13 0
-    | 19 -> Array.make_matrix 19 19 0
-    | _ -> Array.make_matrix 1 1 0
 
 
 
@@ -110,12 +103,24 @@ let assign r c v a =
   in
   cap_terr neighbors
 
+(*************************Functions that deal with board initiation************************)
+
+  (* a function to create an int array array of size [n]x[n] *)
+  let create n =
+    match n with
+    | 9 ->  Array.make_matrix 9 9 0
+    | 13 -> Array.make_matrix 13 13 0
+    | 19 -> Array.make_matrix 19 19 0
+    | _ -> Array.make_matrix 1 1 0
+
+
 (*helper function to handicap that gets the offset for adding handicap stones*)
-let get off_set n =
+let goff_set n =
    match n with
     | 9  -> (2,n-1)
     | 13 -> (3,n-1)
     | 19 -> (3,n-1)
+    | _  -> (0,0)
 
 (*helper function to initiate_game that places the handicap stones*)
   let handicap h n =
@@ -130,6 +135,7 @@ let get off_set n =
       | 4 -> hand 3 (assign (s) (s) 1 b )
       | 5 -> hand 4 (assign (n') (n') 1 b )
       | _ -> b
+    in hand h b
 
   let initiate_game n h =
    let board = handicap n h in
