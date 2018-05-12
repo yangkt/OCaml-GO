@@ -1,10 +1,12 @@
 
+
     type board =
     {
       player : int;
       board : int array array;
       msg : string
     }
+
 
 
 
@@ -29,10 +31,34 @@ let is_end_msg brd =
     | 9 ->  Array.make_matrix 9 9 0
     | 13 -> Array.make_matrix 13 13 0
     | 19 -> Array.make_matrix 19 19 0
+    | _ -> Array.make_matrix 1 1 0
 
-  let initiate_game n = {
+(*helper function to handicap that gets the offset for adding handicap stones*)
+let get off_set n =
+   match n with
+    | 9  -> (2,n-1)
+    | 13 -> (3,n-1)
+    | 19 -> (3,n-1)
+
+(*helper function to initiate_game that places the handicap stones*)
+  let handicap h n =
+   let (s,n') = off_set n in
+   let b = create n in
+    let rec hand h b =
+      match h with
+      | 0 -> b
+      | 1 -> hand 0 (assign (s) (n'-s) 1 b )
+      | 2 -> hand 1 (assign (n'-s) (s) 1 b )
+      | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
+      | 4 -> hand 3 (assign (s) (s) 1 b )
+      | 5 -> hand 4 (assign (n') (n') 1 b )
+      | _ -> b
+
+  let initiate_game n h =
+   let board = handicap n h in
+  {
       player = 1;
-      board = create n;
+      board = board;
       msg = "Game started"
     }
 
@@ -77,13 +103,77 @@ let is_end_msg brd =
        }
   else is_end_msg brd
 
+let get_adjacents board (row,col) =
+  let neighbors = ref [] in
+  if (row > 0) then
+    neighbors := (row-1,col)::(!neighbors);
+  if (col > 0) then
+    neighbors := (row,col-1)::(!neighbors);
+  if (row < (Array.length board) - 1) then
+    neighbors := (row+1,col)::(!neighbors);
+  if (col < (Array.length board) - 1) then
+    neighbors := (row,col+1)::(!neighbors);
+  !neighbors
+
+let get_group board pos =
+  let size = Array.length board in
+  let color = board.(fst pos).(snd pos) in
+  let visited = Array.make_matrix size size false in
+  let v_list = ref [] in
+  let liberties = ref 0 in
+  let queue = ref [pos] in
+  let rec bfs q libs v_l =
+    match !q with
+    | [] -> libs, v_l
+    | (r,c)::t ->
+      q := t;
+      if visited.(r).(c) then
+        bfs q libs v_l
+      else
+        let neighbors = get_adjacents board (r,c) in
+        if board.(r).(c) = 0 then incr libs;
+        if board.(r).(c) = color then
+          (q := neighbors@(!q);
+           v_l := (r,c)::(!v_l));
+        visited.(r).(c) <- true;
+        bfs q libs v_l
+  in
+  let (l,v) = bfs queue liberties v_list in
+  !l, !v
+
+let rec capture board grp =
+  match grp with
+  | [] -> ()
+  | (r,c)::t ->
+    board.(r).(c) <- 0;
+    capture board t
+
+let assign r c v a =
+  Array.set a.(r) c v;
+  let opponent = (v mod 2) + 1 in
+  let neighbors = get_adjacents a (r,c) in
+  let rec cap_terr l =
+    match l with
+    | [] -> a
+    | (row,col)::t ->
+      if a.(row).(col) = opponent then
+        let group = get_group a (r,c) in
+        if fst group = 0 then
+          capture a (snd group);
+        cap_terr t
+      else
+        cap_terr t
+  in
+  cap_terr neighbors
+
+
+
 (*Helper function that converts a stone representation in board to a string *)
- let to_ascii i =
+let to_ascii i =
   match i with
   | 0 -> "."
   | 1 -> "X"
   | 2 -> "O"
-  | -1 -> "/"
   | _ -> failwith "Error: Improper representation"
 
   let board_to_string brd =
@@ -110,70 +200,60 @@ let is_end_msg brd =
   let rec flood_fill (board, still_count) (r,c) plr count_ref =
     (* Index out of bounds *)
     if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
+
+let stone_score brd plr =
+  List.length (get_pos brd plr)
+
+let rec flood_fill (board, still_count) (r,c) plr count_ref =
+  (* Index out of bounds *)
+  if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
+    board, still_count
+  else
+    (* Already explored space or same colored stone already here *)
+    if board.(r).(c) = -1 || board.(r).(c) = plr then
       board, still_count
+    (* Empty area bordered by both black and white -> belongs to neither *)
+    else if (board.(r).(c) = 1 && plr = 2) || (board.(r).(c) = 2 && plr = 1) then
+      board, false
+    (* Mark space as counted, increment counter, and recurse *)
     else
-      (* Already explored space *)
-      if board.(r).(c) = -1 then
-        board, still_count
-      (* Empty area bordered by both black and white -> belongs to neither *)
-      else if (board.(r).(c) = 1 && plr = 2) || (board.(r).(c) = 2 && plr = 1) then
-        board, false
-      else if (board.(r).(c) = plr) then
-        board, still_count
-      (* Mark space as counted, increment counter, and recurse *)
-      else
-        let new_board = assign r c (-1) board in
-        incr count_ref;
-        let down = flood_fill (new_board, true) (r+1,c) plr count_ref in
-        let up = flood_fill down (r-1,c) plr count_ref in
-        let left = flood_fill up (r,c-1) plr count_ref in
-        let right = flood_fill left (r,c+1) plr count_ref in
-        right
+      let new_board = assign r c (-1) board in
+      incr count_ref;
+      let down = flood_fill (new_board, true) (r+1,c) plr count_ref in
+      let up = flood_fill down (r-1,c) plr count_ref in
+      let left = flood_fill up (r,c-1) plr count_ref in
+      let right = flood_fill left (r,c+1) plr count_ref in
+      right
 
-  (* Checks to see if there is an empty position in the board *)
-  let contains_empty arr =
-    Array.fold_left (fun acc x -> acc || Array.mem 0 x) false arr
+(* Find positions of [plr] *)
+let find_pos arr plr =
+  get_pos_array arr plr
 
-  (* Find an empty position on board. If no empty positions, raise Not_found *)
-  let find_empty arr =
-    let pos = ref (-1,-1) in
-    let size = Array.length arr in
-    for i = 0 to size - 1 do
-      for j = 0 to size - 1 do
-        if arr.(i).(j) = 0 then
-          pos := (i, j);
-      done;
-    done;
-    if !pos = (-1,-1) then
-      raise Not_found
-    else
-      !pos
+let copy_matrix m =
+  let n = Array.make_matrix 9 9 0 in
+  for i = 0 to 8 do
+    n.(i) <- Array.copy m.(i);
+  done;
+  n
 
-  let copy_matrix m =
-    let n = Array.make_matrix 9 9 0 in
-    for i = 0 to 8 do
-      n.(i) <- Array.copy m.(i);
-    done;
-    n;;
+let print_array a =
+  Array.fold_left (fun s r -> s^(
+    Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
+  "" a
 
-  let print_array a =
-    Array.fold_left (fun s r -> s^(
-      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
-    "" a
+let territory_score brd plr =
+  let board = brd.board in
+  let size = Array.length board in
+  let temp_board = copy_matrix board in
+  let count = ref 0 in
+  while (List.length (find_pos temp_board 0) <> 0) do
+    let prev_count = !count in
+    let pos = List.hd (find_pos temp_board 0) in
+    let new_board = flood_fill (temp_board, true) pos plr count in
+    if ((snd new_board) && (!count) - prev_count < size * size / 2) = false then
+      count := prev_count;
+  done;
+  !count
 
-  let territory_score brd plr =
-    let board = brd.board in
-    let size = Array.length board in
-    let temp_board = copy_matrix board in
-    let count = ref 0 in
-    while (contains_empty temp_board) do
-      let prev_count = !count in
-      let pos = find_empty temp_board in
-      let new_board = flood_fill (temp_board, true) pos plr count in
-      if ((snd new_board) && (!count) - prev_count < size * size / 2) = false then
-        count := prev_count;
-    done;
-    !count
-
-  let score brd plr =
-    (territory_score brd plr) + (stone_score brd plr)
+let score brd plr =
+  (territory_score brd plr) + (stone_score brd plr)
