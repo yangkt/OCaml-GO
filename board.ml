@@ -112,8 +112,19 @@ let assign r c v a =
   in
   cap_terr neighbors
 
+(*************************Functions that deal with board initiation************************)
+
+  (* a function to create an int array array of size [n]x[n] *)
+  let create n =
+    match n with
+    | 9 ->  Array.make_matrix 9 9 0
+    | 13 -> Array.make_matrix 13 13 0
+    | 19 -> Array.make_matrix 19 19 0
+    | _ -> Array.make_matrix 1 1 0
+
+
 (*helper function to handicap that gets the offset for adding handicap stones*)
-let get_off_set n =
+let off_set n =
    match n with
     | 9  -> (2,n-1)
     | 13 -> (3,n-1)
@@ -121,8 +132,8 @@ let get_off_set n =
     | _ -> (0, 0)
 
 (*helper function to initiate_game that places the handicap stones*)
-  (* let handicap h n =
-   let (s,n') = get_off_set n in
+  let handicap h n =
+   let (s,n') = off_set n in
    let b = create n in
     let rec hand h b =
       match h with
@@ -132,15 +143,23 @@ let get_off_set n =
       | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
       | 4 -> hand 3 (assign (s) (s) 1 b )
       | 5 -> hand 4 (assign (n') (n') 1 b )
-      | _ -> b *)
+      | _ -> b
+    in hand h b
 
-  (* let initiate_game n h =
+  let initiate_game n h =
    let board = handicap n h in
     {
       player = 1;
       board = board;
       msg = "Game started"
-    } *)
+    }
+
+let pass brd =
+  {
+   player = (brd.player mod 2) + 1 ;
+   board = brd.board;
+   msg = "Turn was passed"
+  }
 
 let place brd (r, c) =
 if not_full brd then

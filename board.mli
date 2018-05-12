@@ -7,24 +7,22 @@ type board = {
   msg : string
 }
 
-(* [initiate_game n h] initiates the game.
- * creates a board of size [n] with all entries set to 0 and sets the player
- * to [1], or black, and h stones
- * raises invalid_value if the size, [n], requested is not 9, 13, or 19 *)
-(* val initiate_game : int -> int -> board *)
 
-(* [not_full] *)
+(* [not_full] checks that [brd] is not full with stones *)
 val not_full : board -> bool
 
 (* val pass : board -> board *)
 
 val create : int -> int array array
 
+val pass : board -> board
+
+
 (* [initiate_game n] initiates the game.
  * creates a board of size [n] with all entries set to 0 and sets the player
  * to [1], or black. the [h] argument
  *  *)
-(* val initiate_game : int -> int -> board *)
+val initiate_game : int -> int -> board
 
 
 
