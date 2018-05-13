@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 open GMain
 open GdkKeysyms
 open GDraw
@@ -104,7 +103,6 @@ let handle_input i  msg=
   failwith "Unimplemented"
 
 let () = init ();
-=======
 open GMain
 open GdkKeysyms
 open GDraw
@@ -223,4 +221,4 @@ let handle_input i  msg=
   failwith "Unimplemented"
 
 let () = init ();
->>>>>>> 120eb625eed7de7df2d701747a32783b7bb3a03e
+

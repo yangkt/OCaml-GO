@@ -7,7 +7,7 @@ type board =
 }
 
 
-(********************** End game checking functions ***************************)
+(********************** Game over checking functions ***************************)
 
 (*no positions left*)
 let rec not_full brd =
@@ -109,7 +109,7 @@ let assign r c v a =
   in
   cap_terr neighbors
 
-(*************************Functions that deal with board initiation************************)
+(*****************Functions that deal with board initiation******************)
 
 (* a function to create an int array array of size [n]x[n] *)
 let create n =
