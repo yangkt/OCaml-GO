@@ -1,7 +1,7 @@
 
 open Board
 open OUnit2
-open Text
+open Move
 
 let empty_9 = Array.make_matrix 9 9 0
 let brd9 = {
@@ -158,13 +158,14 @@ let text_test = [
 (******************************************************************************
     Test parsing
 *******************************************************************************)
-"parse place" >:: (fun _ -> assert_equal (Move (0,0)) (parse place0));
-"pase place 1" >:: (fun _ -> assert_equal (Move (0,0)) (parse place1));
-"parse place 2" >:: (fun _ -> assert_equal Invalid (parse place2));
-"parse score" >:: (fun _ -> assert_equal Score (parse score));
-"parse display" >:: (fun _ -> assert_equal Display (parse display));
-"parse help" >:: (fun _ -> assert_equal Help (parse help));
-
+"parse place" >:: (fun _ -> assert_equal (Move (0,0)) (parse_move place0));
+"pase place 1" >:: (fun _ -> assert_equal (Move (0,0)) (parse_move place1));
+"parse place 2" >:: (fun _ -> assert_equal (Invalid ("position must be a valid integer location"))
+                                            (parse_move place2));
+"parse score" >:: (fun _ -> assert_equal Score (parse_move score));
+"parse display" >:: (fun _ -> assert_equal Display (parse_move display));
+"parse help" >:: (fun _ -> assert_equal Help (parse_move help));
+"parse create" >:: (fun _ -> assert_equal (Create (9,0)) (parse_move "create 9 0"));
 ]
 
 

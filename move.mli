@@ -1,20 +1,14 @@
 
 type move =
-  | Create of int * int * int
-  | Place of int * int
+  | Create of int * int
+  | Move of int * int
   | Surrender
   | Pass
   | Help
   | Invalid of string
-
-
-(*  type command =
-  | Create of int
-  | Surrender
   | Score
-  | Pass
-  | Place of int * int *)
-
+  | Display
+  | End_m
 
 
 

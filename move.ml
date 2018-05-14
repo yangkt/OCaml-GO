@@ -6,11 +6,21 @@ type move =
   | Pass
   | Help
   | Invalid of string
+  | Score
+  | Display
+  | End_m
 
-let parse s =
+
+let parse_move s =
   let cmd = String.lowercase_ascii s in
 
-  if cmd = "help" then
+  if cmd = "end" then
+    End_m
+
+  else if cmd = "show board" then
+    Display
+
+  else if cmd = "help" then
     Help
 
   else if cmd = "surrender" then
