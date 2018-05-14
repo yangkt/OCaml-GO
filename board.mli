@@ -31,6 +31,8 @@ val get_pos : board -> int -> (int*int) list
  * a descriptive message in the msg field.  *)
 val place : board -> (int*int) -> board
 
+val end_board : board -> board
+
 (* [place_ai] takes a board type and the level of the ai that is going to place
  * a stone on the board.
  * This function returns a board with the updated player and state. *)
