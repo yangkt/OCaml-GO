@@ -331,8 +331,15 @@ let greedy brd =
 (*a function that returns a coordinate pair of an empty spot on a board*)
 let random brd =
   let espots = get_pos brd 0 in
+  let rec r spots =
     let rand  = Random.int (List.length espots) in
-      List.nth espots rand
+      let points = List.nth espots rand in
+       let brd = place brd points in
+       if brd.msg = "Illegal move" then
+        let sp = List.filter (fun a -> a != points) spots in
+          r sp
+        else points
+  in r espots
 
 let place_ai brd lvl =
   match lvl with

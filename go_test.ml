@@ -72,7 +72,6 @@ let brd3 = {
   msg = ""
 }
 
-
 let outofBound = "Out of bounds"
 let placeMsg = "Stone placed at: (0,1)"
 let occ = "Position is occupied"
@@ -92,10 +91,10 @@ let v9_5 = Array.make_matrix 9 9 0 |> assign 2 6 1 |> assign 6 2 1 |> assign 6 6
                                    |> assign 2 2 1 |> assign 4 4 1
 
 let v13_5 = Array.make_matrix 13 13 0 |> assign 3 9 1|> assign 9 3 1 |> assign 9 9 1
-                                    |> assign 3 3 1 |> assign 6 6 1
+                                      |> assign 3 3 1 |> assign 6 6 1
 
 let v19_5 = Array.make_matrix 19 19 0 |> assign 3 15 1 |> assign 15 3 1 |> assign 15 15 1
-                                    |> assign 3 3 1 |> assign 9 9 1
+                                      |> assign 3 3 1 |> assign 9 9 1
 
 let invalid = Array.make_matrix 1 1 0
 
@@ -115,7 +114,6 @@ let board_test = [
 "invalid init, invalid size" >:: (fun _ -> assert_equal (invalid) (initiate_game 10 3).board);
 "invalid init, invalid handi" >:: (fun _ -> assert_equal (invalid) (initiate_game 9 10).board);
 
-
 (******************************************************************************
     Test get_pos
 *******************************************************************************)
@@ -123,15 +121,12 @@ let board_test = [
   "get_pos size empty" >:: (fun _ -> assert_equal get_pos_0_b1_size (List.length (get_pos brd1 0)));
   "get_post non existant" >:: (fun _ -> assert_equal [] (get_pos brd1 3));
 
-
-
 (******************************************************************************
     Test place
 *******************************************************************************)
   "place on empty" >:: (fun _ -> assert_equal placeMsg (place brd1 (0,1) ).msg );
   "place out of bounds" >:: (fun _ -> assert_equal outofBound (place brd1 (30,0) ).msg );
   "place on stone" >:: (fun _ -> assert_equal occ (place brd1 (0,0) ).msg );
-
 
 (******************************************************************************
     Test end of game
@@ -171,7 +166,6 @@ let text_test = [
 "parse help" >:: (fun _ -> assert_equal Help (parse help));
 
 ]
-
 
 
 let move_test = [
