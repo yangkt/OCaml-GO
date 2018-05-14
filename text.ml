@@ -60,7 +60,7 @@ let parse s =
  * player [p]'s stones. *)
 let update board cmd p =
   match cmd with
-  | Move (x, y) -> place board (x, y) 0 (*to be changed*)
+  | Move (x, y) -> place board (x, y)  (*to be changed*)
   | Score | Help | Display | Invalid -> board
 
 

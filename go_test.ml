@@ -113,7 +113,7 @@ let board_test = [
 "valid init size 13 H5" >:: (fun _ -> assert_equal (v13_5) (initiate_game 13 5).board);
 "valid init size 19 H5" >:: (fun _ -> assert_equal (v19_5) (initiate_game 19 5).board);
 "invalid init, invalid size" >:: (fun _ -> assert_equal (invalid) (initiate_game 10 3).board);
-"invalid init, invalid handi" >:: (fun _ -> assert_equal (invalid) (initiate_game 9 5).board);
+"invalid init, invalid handi" >:: (fun _ -> assert_equal (invalid) (initiate_game 9 10).board);
 
 
 (******************************************************************************
@@ -128,9 +128,9 @@ let board_test = [
 (******************************************************************************
     Test place
 *******************************************************************************)
-  "place on empty" >:: (fun _ -> assert_equal placeMsg (place brd1 (0,1) 0).msg );
-  "place out of bounds" >:: (fun _ -> assert_equal outofBound (place brd1 (30,0) 0).msg );
-  "place on stone" >:: (fun _ -> assert_equal occ (place brd1 (0,0) 0).msg );
+  "place on empty" >:: (fun _ -> assert_equal placeMsg (place brd1 (0,1) ).msg );
+  "place out of bounds" >:: (fun _ -> assert_equal outofBound (place brd1 (30,0) ).msg );
+  "place on stone" >:: (fun _ -> assert_equal occ (place brd1 (0,0) ).msg );
 
 
 (******************************************************************************

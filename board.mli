@@ -40,7 +40,7 @@ val get_pos : board -> int -> (int*int) list
  * a descriptive message in the msg field.  *)
 val place : board -> (int*int) -> board
 
-val place_ai : board -> ai_level
+val place_ai : board -> ai_level -> board
 
 (* [territory_score brd plr] calculates the score from purely territory on the
  * board [brd] for player [plr] *)

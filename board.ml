@@ -24,14 +24,6 @@ let is_end_msg brd =
          msg = "Game over, board is full"
        }
 
-  (* a function to create an int array array of size [n]x[n] *)
-let create n =
-  match n with
-  | 9 ->  Array.make_matrix 9 9 0
-  | 13 -> Array.make_matrix 13 13 0
-  | 19 -> Array.make_matrix 19 19 0
-  | _ -> Array.make_matrix 1 1 0
-
 
 let get_pos_arr arr plr =
   let lst = ref [] in
@@ -131,21 +123,21 @@ let off_set n =
     | _ -> (0, 0)
 
 (*helper function to initiate_game that places the handicap stones*)
-let handicap h n =
+let handicap n h =
  let (s,n') = off_set n in
  let b = create n in
  if Array.length b = 1 then b
 else
-  let rec hand h b =
+  let rec hand h b n s =
     match h with
     | 0 -> b
-    | 1 -> hand 0 (assign (s) (n'-s) 1 b )
-    | 2 -> hand 1 (assign (n'-s) (s) 1 b )
-    | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
-    | 4 -> hand 3 (assign (s) (s) 1 b )
-    | 5 -> hand 4 (assign (n') (n') 1 b )
+    | 1 -> hand 0 (assign (s) (n-s) 1 b ) n s
+    | 2 -> hand 1 (assign (n-s) (s) 1 b ) n s
+    | 3 -> hand 2 (assign (n-s) (n-s) 1 b ) n s
+    | 4 -> hand 3 (assign (s) (s) 1 b ) n s
+    | 5 -> hand 4 (assign (n) (n) 1 b ) n s
     | _ -> b
-  in hand h b
+  in hand h b n' s
 
 let initiate_game n h =
  let board = handicap n h in
