@@ -251,8 +251,9 @@ let find_pos arr plr =
   get_pos_arr arr plr
 
 let copy_matrix m =
-  let n = Array.make_matrix 9 9 0 in
-  for i = 0 to 8 do
+  let size = Array.length m in
+  let n = Array.make_matrix size size 0 in
+  for i = 0 to size - 1 do
     n.(i) <- Array.copy m.(i);
   done;
   n
@@ -304,7 +305,7 @@ let greedy brd =
   let board = brd.board in
   let size = Array.length board in
   let temp_board = ref (copy_matrix board) in
-  let score_board = Array.make_matrix 9 9 0 in
+  let score_board = Array.make_matrix size size 0 in
   for i = 0 to size - 1 do
     for j = 0 to size - 1 do
       if board.(i).(j) = 0 then
@@ -313,7 +314,7 @@ let greedy brd =
                                 (stone_score_arr !temp_board 2) +
                                 (int_of_bool (num_filter board (i,j) 2 > 0)) -
                                 (score_arr board 1);
-         temp_board := assign i j 0 (!temp_board));
+         (!temp_board).(i).(j) <- 0;);
     done;
   done;
   let max_pos = ref (0,0) in
