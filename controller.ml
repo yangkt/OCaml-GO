@@ -69,8 +69,7 @@ let turn s c =
   | Pass ->
     let board = c.curr in
     if c.pass = true then
-      let board' = end_board board in
-        Board {c with curr = board'; pass = true;}
+      turn "end" c
     else
       let board' = pass board in
         Board {c with curr = board'; pass = true;}

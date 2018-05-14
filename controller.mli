@@ -1,4 +1,3 @@
-
 open Board
 
 type control = {
