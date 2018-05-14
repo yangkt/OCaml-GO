@@ -117,7 +117,9 @@ let update_gui size w b =
 (*********************************************************************)
 
 let update_player s =
-  failwith "Unimplemented"
+  set_color (rgb 0 0 0);
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  draw_string s
 
 let update_message s =
   set_color (rgb 196 156 103);
@@ -128,6 +130,7 @@ let update_message s =
 
 let update_score s p =
   failwith "Unimplemented"
+
 
 (*********************************************************************)
 (******   ANY AND ALL THINGS RELATING GRID SCREEN DRAWINGS   *********)
@@ -158,6 +161,9 @@ let draw_names (p1, p2) =
   moveto 85 480;
   draw_string "0"
 
+
+
+
 let rec draw_nums gs size count=
   set_font "-*-fixed-medium-r-semicondensed--15-*-*-*-*-*-iso8859-1";
   if count = size then ()
@@ -170,6 +176,12 @@ let rec draw_nums gs size count=
       draw_string (Pervasives.string_of_int count) else ();
     moveto 245 y; draw_string (Pervasives.string_of_int count);
     draw_nums gs size (count+1)
+
+let draw_player_field () =
+  set_color (rgb 0 0 0);
+  set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  moveto (1100/2+300) (750/2+300);
+  draw_string "CURRENT PLAYER:"
 
 (* [draw_grid gs s num] draws the lines for a [s]x[s] grid. [gs] the size of the
    drawing area for the grid. [num] is the number of lines that have already
@@ -187,6 +199,7 @@ let rec draw_grid gs size num =
     lineto (260+gs) y;
     draw_grid gs size (num+1);
     draw_nums gs size 0;
+    draw_player_field ();
     set_color black;
     fill_circle 260 160 (interval / 3);
     set_color white;
@@ -305,10 +318,6 @@ let main () =
   draw_string "19x19 WITH AI";
   get_press ();
 
-  (*game_play ();*)
-  (*  let gs = 648 in
-      (*draw_rect 225 65 gs gs;*)
-      draw_grid gs 9 0;*)
 
   run true
 
