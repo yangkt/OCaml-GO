@@ -133,20 +133,28 @@ let new_screen n =
   draw_string "Back"*)
 
 
+let rec show_handicap_options size =
+  clear_graph ();
+  (*open_graph (" 1100 750");*)
+  set_color (rgb 44 206 238);
+  fill_rect (1100/2) (750/2) 100 50
+
+
+
 let rec get_press () =
   if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
     if ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4+325 && y_pos<750/4+375)||
-        (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+325 && y_pos<750/4+375)||
-        (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+325 && y_pos<750/4+375))
+        (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+325 && y_pos<750/4+375))
     then new_screen 9
-    else if ((x_pos>1100/2-3400 && x_pos<1100/2 && y_pos>750/4+150 && y_pos<750/4+200)||
-             (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+150 && y_pos<750/4+200)||
-             (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+150 && y_pos<750/4+200))
+    else if ((x_pos>1100/2-340 && x_pos<1100/2 && y_pos>750/4+150 && y_pos<750/4+200)||
+             (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+150 && y_pos<750/4+200))
     then new_screen 13
     else if ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4-25 && y_pos<750/4+25)||
-             (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4-25 && y_pos<750/4+25)||
-             (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4-25 && y_pos<750/4+25))
+             (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4-25 && y_pos<750/4+25))
     then new_screen 19
+    else if  (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+325 && y_pos<750/4+375) then show_handicap_options 9
+    else if   (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+150 && y_pos<750/4+200) then show_handicap_options 13
+    else if (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4-25 && y_pos<750/4+25) then show_handicap_options 19
     else get_press ()
   else get_press ()
 
@@ -185,18 +193,18 @@ let main () =
   draw_string "19x19";
 
   moveto (1100/2 - 90) (750/4+340);
-  draw_string "9x9 WITH AI";
+  draw_string "9x9 HANDICAP";
   moveto (1100/2 - 90) (750/4+165);
-  draw_string "13x13 WITH AI";
+  draw_string "13x13 HANDICAP";
   moveto (1100/2 - 90) (750/4-10);
-  draw_string "19x19 WITH AI";
+  draw_string "19x19 HANDICAP";
 
   moveto (1100/2 + 210) (750/4+340);
-  draw_string "9x9 HANDICAP";
+  draw_string "9x9 WITH AI";
   moveto (1100/2 +200) (750/4+165);
-  draw_string "13x13 HANDICAP";
+  draw_string "13x13 WITH AI";
   moveto (1100/2 +200) (750/4-10);
-  draw_string "19x19 HANDICAP";
+  draw_string "19x19 WITH AI";
   get_press ();
 
   (*game_play ();*)
