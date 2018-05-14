@@ -348,11 +348,6 @@ let greedy brd =
          (!temp_board).(i).(j) <- 0;);
     done;
   done;
-  let print_array m =  Array.fold_left (fun s r -> s^(
-      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
-      "" score_board in
-  print_endline (print_array score_board);
-  print_endline (print_array temp_board);
   let max_score = Array.fold_left
       (fun acc x -> Array.fold_left (fun acc_ x_ -> max acc_ x_) acc x)
       min_int score_board in
