@@ -6,7 +6,7 @@ text:
 	ocamlbuild -use-ocamlfind text.byte && ./text.byte
 
 gui:
-	ocamlbuild -useocamlfind gui.byte && ./gui.byte
+	ocamlbuild -use-ocamlfind gui.byte && ./gui.byte
 
 clean:
 	ocamlbuild -clean

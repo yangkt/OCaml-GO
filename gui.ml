@@ -245,4 +245,4 @@ let main () =
 
   run true
 
-(*let _ = main ()*)
+let _ = main ()
