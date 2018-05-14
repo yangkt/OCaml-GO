@@ -60,8 +60,8 @@ let draw_finish () =
   draw_string "Finish"
 
 let draw_log () =
-  draw_rect 200 5 696 100;
-  moveto 210 105;
+  draw_rect 200 5 696 105;
+  moveto 210 110;
   Graphics.set_font "-*-fixed-medium-r-semicondensed--18-*-*-*-*-*-iso8859-1";
   draw_string "MESSAGE LOG"
 
@@ -72,13 +72,39 @@ let draw_names (p1, p2) =
   moveto 925 580;
   draw_string (p2 ^ "'s score: ")
 
-let rec handle_event () =
+(* determine coordinates on based on the click
+ * if in a radius (1/3 interval / size of each box), then determine and return
+ * the coordinates of the click
+ * returns: (-1, -1) if doesn't count as a click on a point, otherwise coords *)
+let handle_grid px py s =
+  let interval = 576 / (s-1) in
+  let (x', y') = (px-260, py-160) in
+  let diff = (float_of_int interval) /. 3. in
+  let x'' = (float_of_int x') /. (float_of_int interval) in
+  let y'' = (float_of_int y') /. (float_of_int interval) in
+  let xf = (floor x'') in
+  let xc = (ceil x'') in
+  let yf = (floor y'') in
+  let yc = (ceil y'') in
+  if (x'' -. xf <= diff && y'' -. yf <= diff) then
+    (int_of_float xf, int_of_float yf)
+  else
+  if (abs_float (x'' -. xc)) <= diff && (abs_float (y'' -. yc)) <= diff then
+    (int_of_float xc, int_of_float yc)
+  else (-1, -1)
+
+
+let rec handle_input n =
   let status = wait_next_event ([Button_down]) in
   let (x, y) = (status.mouse_x, status.mouse_y) in
   print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
-  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then draw_final_screen 1 0
+  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then
+    draw_final_screen 1 0
   else
-    handle_event ()
+    if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
+      handle_input n
+    else
+      handle_input n
 
 
 let rec draw_nums gs size count=
@@ -109,7 +135,9 @@ let rec draw_grid gs size num =
     moveto 260 y;
     lineto (260+gs) y;
     draw_grid gs size (num+1);
-    draw_nums gs size 0
+    draw_nums gs size 0;
+    set_color black;
+    fill_circle 260 160 (interval / 5)
 
 
 (*let rec go_back () =
@@ -127,7 +155,7 @@ let new_screen n =
   draw_log ();
   draw_finish ();
   draw_names ("p1", "p2");
-  handle_event ()
+  handle_input n
 (*fill_rect (1100/2 - 100) (750/4) 200 50;
   moveto (1100/2-50) (750/4+5);
   draw_string "Back"*)

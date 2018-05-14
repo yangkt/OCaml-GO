@@ -1,3 +1,4 @@
+(*)
 open Board
 
 type t
@@ -27,3 +28,4 @@ val update_gui : Board.board -> unit
 (* [handle_input i] deals with whatever input. Based on the input (i.e. button
  * clicked), generates a string that represents the action.*)
 val handle_input : unit -> string
+*)
