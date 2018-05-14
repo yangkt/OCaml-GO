@@ -1,5 +1,7 @@
 
 open Board
+open Move
+open Controller
 
 (* NOTES:
  * - parse the command somewhere else other than in state-- will probably need
@@ -11,50 +13,7 @@ open Board
  * - find a way to determine when the game is over
  *)
 
-type command =
-  | Move of int * int
-  | Score
-  | Display
-  | Help
-  | Invalid
-
-(* [parse str] parses the command typed into the terminal into a command type
- * returns: the type of move that the player typed in, or Invalid if the command
- * is not possible *)
-
-let parse s =
-  let cmd = String.lowercase_ascii s in
-
-  if cmd = "help" then
-    Help
-
-  else if cmd = "show board" then
-    Display
-
-  else if cmd = "score" then
-    Score
-
-  else if (String.sub cmd 0 5 = "place") then
-    let str = String.sub cmd 6 ((String.length cmd) - 6) in
-    let space = String.index str ' ' in
-    let s1 = String.sub str 0 space in
-    let s2 = String.sub str (space + 1) ((String.length str) - (space+1)) in
-    let i1 =
-      try int_of_string s1
-      with _ -> -1
-    in
-    let i2 =
-      try int_of_string s2
-      with _ -> -1
-    in
-    if i1 = -1 || i2 = -1 then
-      Invalid
-    else
-      Move (i1, i2)
-
-  else
-    Invalid
-
+(*
 (* [update b c p] updates board [b] based on the given command, [cmd]. If the
  * board needs to be updated / a move is made, then the board is updated for
  * player [p]'s stones. *)
@@ -76,10 +35,24 @@ let help_msg () =
    Scoring does not count as taking a move. Placing a stone is your turn and
     moves to the next player; however, if your move is invalid, you will be
     allowed to place a stone down again."
+  *)
+
+let rec ask_type () =
+  print_endline "Choose your type of game: ";
+  print_endline "[1]. 2 player \n [2]. 1 player (easy) \n [3] 1 player (hard)";
+  print_string "> ";
+  let op = read_int_opt () in
+  match op with
+  | Some n ->
+    if n = 1 || n = 2 || n = 3 then
+      n
+    else
+      ask_type ()
+  | None -> ask_type ()
 
 (* [play_game b p] plays one of [p]'s turn based on the current board and the
  * command typed in. Repeats until game is over. *)
-let rec play_game board p =
+(*let rec play_game board =
   print_endline ("Player "^string_of_int(p)^", make a move");
   print_string "> ";
   let str = read_line () in
@@ -91,8 +64,17 @@ let rec play_game board p =
   | Score -> print_endline (string_of_int (score board p)); play_game board' p
   | Help -> print_endline (help_msg ()); play_game board' p
   | Display -> print_endline (board_to_string board); play_game board' p
-  | Invalid -> play_game board' p
+  | Invalid -> play_game board' p*)
 
+let rec play_game control =
+  let p = control.plyr in
+  print_endline ("Player " ^ string_of_int p ^ " to move.");
+  print_string "> ";
+  let str = read_line () in
+  let result = Controller.turn str in
+  match result with
+  | Exception s -> print_endline "invalid move"; play_game control
+  | Board c' -> print_endline (c'.board.msg); play_game c'
 
 (*
 (* [main ()] starts the text REPL and allows for game play.
@@ -100,12 +82,24 @@ let rec play_game board p =
 let main () =
   ANSITerminal.(print_string [red]
     "\n\nWelcome to the Game of Go.\n");
-  print_endline "Pleaose enter the size of the board you wish to play on
+  let type = ask_type () in
+  print_endline "Please enter the size of the board you wish to play on
     (9, 13, 19).\n";
   print_string  "> ";
   let n = read_line () in
-  let board = initiate_game (int_of_string n) 0 in
-  play_game board 1
+  print_endline "How many handicapped stones do you want to start with?";
+  print_string "> ";
+  let h = read_line () in
+  let (x, y) = (int_of_string_opt n, int_of_string_opt h) in
+  let (n', h') =
+    match (x, y) with
+    | (Some x', Some y') -> (x', y')
+    | (Some x', None) -> (x', -1)
+    | (None, Some y') -> (-1, y')
+    | (None, None) -> (-1, -1)
+  in
+  let control = init_game n' h' type in
+  play_game control
 
 (* this line is necessary for the text repl in order to run--
  * [let () = main ()] is similar to any other let expression, but
