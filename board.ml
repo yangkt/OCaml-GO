@@ -135,8 +135,8 @@ else
     | 2 -> hand 1 (assign (n-s) (s) 1 b ) n s
     | 3 -> hand 2 (assign (n-s) (n-s) 1 b ) n s
     | 4 -> hand 3 (assign (s) (s) 1 b ) n s
-    | 5 -> hand 4 (assign (n) (n) 1 b ) n s
-    | _ -> b
+    | 5 -> hand 4 (assign (n/2) (n/2) 1 b ) n s
+    | _ -> Array.make_matrix 1 1 0
   in hand h b n' s
 
 let initiate_game n h =
