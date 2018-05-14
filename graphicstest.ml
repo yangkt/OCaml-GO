@@ -1,12 +1,5 @@
 open Graphics
 
-(* NOTES:
- * grid sizes: (sorry i hate floating point division)
-  if 9x9 -> 648
-    13x13 -> 650
-    19x19 -> 665
- *)
-
 (*so the gui doesn't close in 2 seconds*)
 let rec run b =
   if b then run b else false
@@ -19,17 +12,36 @@ let draw_rect x y w h =
    drawing area for the grid. [num] is the number of lines that have already
    been drawn to the board.*)
 let rec draw_grid gs size num =
-  if num = 8 then
+  if num = (size - 2) then
     ()
   else
-    let interval = gs / size in
-    let x = 225 + ((num + 1) * interval) in
-    let y = (65+gs) - ((num + 1) * interval) in
-    moveto x (65+gs);
-    lineto x 65;
-    moveto 225 y;
-    lineto (225+gs) y;
+    let interval = gs / (size - 1) in
+    let x = 260 + ((num + 1) * interval) in
+    let y = (160+gs) - ((num + 1) * interval) in
+    moveto x (160+gs);
+    lineto x 160;
+    moveto 260 y;
+    lineto (260+gs) y;
     draw_grid gs size (num+1)
+
+let draw_log () =
+  draw_rect 200 5 696 120;
+  moveto 210 131;
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--18-*-*-*-*-*-iso8859-1";
+  draw_string "MESSAGE LOG"
+
+let draw_names (p1, p2) =
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--21-*-*-*-*-*-iso8859-1";
+  moveto 85 580;
+  draw_string (p1 ^ "'s score: ");
+  moveto 925 580;
+  draw_string (p2 ^ "'s score: ")
+
+let rec handle_event () =
+  let status = wait_next_event ([Button_down]) in
+  let (x, y) = (status.mouse_x, status.mouse_y) in
+  print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
+  handle_event ()
 
 let main () =
   let () = Random.self_init () in
@@ -40,10 +52,12 @@ let main () =
   set_color bgc;
   clear_graph ();
   set_color white;*)
-  let gs = 648 in
-  draw_rect 225 65 gs gs;
-  draw_grid gs 9 0;
-  run true
+  let gs = 576 in
+  draw_rect 260 160 gs gs;
+  draw_grid gs 19 0;
+  draw_log ();
+  draw_names ("p1", "p2");
+  handle_event ()
 (**let _ = Sys.command("clear") in
    ANSITerminal.(print_string [red] "Welcome to the Settlers of Clarktan.");
    print_newline ()*)
