@@ -1,11 +1,11 @@
-(*)
+
 open Board
 
-type t
-
+    (*)
 (* [draw_board (s, w, b)] updates the board with size [s] displayed on the GUI
  * by drawing all the white stones in [w] and black stones in [b]*)
-val draw_board : int -> Board.board -> unit
+      val draw_board : int -> Board.board -> unit
+    *)
 
 (* [update_player p] updates the name displayed in the GUI on the current
  * display to player p
@@ -23,9 +23,8 @@ val update_score : int -> int -> unit
 
 (* [update_gui b] redraws the GUI to the updated board
  * returns: unit*)
-val update_gui : Board.board -> unit
+val update_gui : int -> (int * int) list -> (int * int) list -> unit
 
 (* [handle_input i] deals with whatever input. Based on the input (i.e. button
  * clicked), generates a string that represents the action.*)
-val handle_input : unit -> string
-*)
+val handle_input : int -> unit

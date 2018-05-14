@@ -1,5 +1,6 @@
 open Board
 open Move
+open Gui
 
 type control = {
   curr : Board.board;
@@ -36,7 +37,7 @@ let init_game n h t =
       else
         initiate_controller n h t
 
-          (*)
+
 let update_gui board =
   let message = board.msg in
   if (message = "Out of bounds" || message = "Position is occupied" ||
@@ -44,15 +45,15 @@ let update_gui board =
     update_message message
   else
     update_message message;
-    let p = b.player in
-    let sp = score b p in
+    let p = board.player in
+    let sp = score_ind board p in
     let p' = ((p mod 2) + 1) in
-    let sp' = score b p' in
+    let sp' = score_ind board p' in
     update_score p sp;
     update_score p' sp';
     update_player (string_of_int p);
-    update_gui board
-          *)
+    update_gui (Array.length board.board) (get_pos board 2) (get_pos board 1)
+
 
 let rec turn s c =
   let cmd = Move.parse_move s in
@@ -61,11 +62,11 @@ let rec turn s c =
   | Move (x, y) ->
     let board = c.curr in
     let board' = place board (x, y) in
-      Board {c with curr = board';}
+      Board {c with curr = board'; pass = false}
   | Surrender ->
     let board = c.curr in
     let board' = end_board board in
-      Board {c with curr = board';}
+      Board {c with curr = board'; pass = false}
   | Pass ->
     let board = c.curr in
     if c.pass = true then

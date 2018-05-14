@@ -1,5 +1,4 @@
 open Graphics
-open Controller
 
 (* NOTES:
  * grid sizes: (sorry i hate floating point division)
