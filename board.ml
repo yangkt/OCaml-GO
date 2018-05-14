@@ -6,7 +6,7 @@ type board =
   msg : string
 }
 
-type ai_level = Easy | Hard
+type ai_level = Easy | Hard | None
 
 (********************** Game over checking functions ***************************)
 
@@ -30,6 +30,7 @@ let is_end_msg brd =
          msg = "Game over, board is full"
        }
 
+(*TO DO comment*)
 let get_pos_arr arr plr =
   let lst = ref [] in
   for r = 0 to  (Array.length arr)-1 do
@@ -45,6 +46,7 @@ let get_pos brd plr =
   let board = brd.board in
   get_pos_arr board plr
 
+(*TO DO comment*)
 let get_adjacents board (row,col) =
   let neighbors = ref [] in
   if (row > 0) then
@@ -83,6 +85,7 @@ let get_group board pos =
   let (l,v) = bfs queue liberties v_list in
   !l, !v
 
+(*TO DO comment*)
 let rec capture board grp =
   match grp with
   | [] -> ()
@@ -154,6 +157,7 @@ let initiate_game n h =
 
 (************** Functions that update board based on a turn *******************)
 
+(*TO DO comment*)
 let valid_c c n =
   c > -1 && c < n
 
@@ -215,18 +219,25 @@ let to_ascii i =
 
   let board_to_string brd =
    let b = brd.board in
-    Array.fold_left (fun s r -> s^(
+   let m =  Array.fold_left (fun s r -> s^(
       Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
-    "" b
+    "" b in
+    {
+    board = brd.board;
+    player = brd.player;
+    msg = m
+    }
 
 (************************* Scoring functions **********************************)
 
+(*TO DO comment*)
 let stone_score_arr board plr =
   List.length (get_pos_arr board plr)
 
 let stone_score brd plr =
   List.length (get_pos brd plr)
 
+(*TO DO comment*)
 let rec flood_fill (board, still_count) (r,c) plr count_ref =
   (* Index out of bounds *)
   if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
@@ -260,11 +271,13 @@ let copy_matrix m =
   done;
   n
 
+(*TO DO comment*)
 let print_array a =
   Array.fold_left (fun s r -> s^(
     Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
   "" a
 
+(*TO DO comment*)
 let territory_score_arr board plr =
   let size = Array.length board in
   let temp_board = copy_matrix board in
@@ -282,12 +295,25 @@ let territory_score brd plr =
   let board = brd.board in
   territory_score_arr board plr
 
+(*TO DO comment*)
 let score_arr board plr =
   (territory_score_arr board plr) + (stone_score_arr board plr)
 
-let score brd plr =
+let score_ind brd plr =
   (territory_score brd plr) + (stone_score brd plr)
 
+let score_both brd =
+  let score_1 = score_ind brd 1 in
+  let score_2 = score_ind brd 2 in
+   {
+   board = brd.board;
+   player = brd.player;
+   msg = "Score for player 1: "^(string_of_int score_1)^
+    "\n"^"Score for player 2: "^(string_of_int score_2)
+   }
+
+
+(*TO DO comment*)
 let num_filter board (r,c) plr =
   let counter = ref 0 in
   for i = -1 to 1 do
@@ -298,11 +324,13 @@ let num_filter board (r,c) plr =
   done;
   !counter
 
+(*TO DO comment*)
 let int_of_bool b =
   if b then 1 else 0
 
 (********************** AI place functions *********************************)
 
+(*TO DO comment*)
 let greedy brd =
   let board = brd.board in
   let size = Array.length board in
@@ -330,6 +358,7 @@ let greedy brd =
   done;
   !max_pos
 
+(*TO DO comment*)
 let copy_board brd =
     {
     player = brd.player;
@@ -354,3 +383,4 @@ let place_ai brd lvl =
   match lvl with
   | Easy -> place brd (random brd)
   | Hard -> place brd (greedy brd)
+  | None -> brd

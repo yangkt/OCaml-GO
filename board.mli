@@ -6,7 +6,7 @@ type board = {
   msg : string
 }
 
-type ai_level = Easy | Hard
+type ai_level = Easy | Hard | None
 
 (* [not_full] checks that [brd] is not full with stones *)
 val not_full : board -> bool
@@ -49,11 +49,13 @@ val stone_score : board -> int -> int
 
 (* [score b p] returns the current score for the given player [p] on a game with
  * a board [b] *)
-val score : board -> int -> int
+val score_ind : board -> int -> int
 
-(* returns a string representation of the board
+val score_both : board -> board
+
+(* returns a string representation of the board in the board msg field
  * used for ascii printing  *)
-val board_to_string : board -> string
+val board_to_string : board -> board
 
 (* models the set in Arrays module in OCaml but does not return unit*)
 val assign : int -> int -> int -> int array array -> int array array

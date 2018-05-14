@@ -11,11 +11,13 @@ type control = {
 type result =
   | Board of control
   | Exception of string
-  | Help of string 
+  | Help of string
 
-(* [init_game s n] initializes a game of Go with a empty board of size s*s and
- * n handicapped stones pre-placed on the board. If n is 0, then the handicap
+(* [init_game] initializes a game of Go with a empty board of size [n]X[n] and
+ * [h] handicapped stones pre-placed on the board. If n is 0, then the handicap
  * option was not chosen, and the game starts with an empty board.
+ * [t] reppresents the type of game play
+ * 1 - p vs p, 2 - player vs easy ai, 3 - player vs hard ai
  * returns: unit*)
 val init_game : int -> int -> int -> result
 
