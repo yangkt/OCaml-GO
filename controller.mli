@@ -4,8 +4,7 @@ open Board
 type control = {
   curr : Board.board;
   pass : bool;
-  plyr : int;
-  ai : bool;
+  ai : ai_level;
 }
 
 type result =
@@ -22,9 +21,11 @@ type result =
  * returns: unit*)
 val init_game : int -> int -> int -> result
 
+    (*)
 (* [update_gui b] updates the display with the updated board state after a player
  * has taken a move *)
-val update_gui : Board.board -> unit
+      val update_gui : Board.board -> unit
+    *)
 
 (* [turn m b] takes another step / turn in the game given the player's move and
  * rhe current state of the board

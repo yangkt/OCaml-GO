@@ -18,7 +18,7 @@ let rec ask_type () =
 
 
 let rec play_game control =
-  let p = control.plyr in
+  let p = control.curr.player in
   print_endline ("Player " ^ string_of_int p ^ " to move.");
   print_string "> ";
   let str = read_line () in
@@ -32,7 +32,7 @@ let rec play_game control =
 
 (* [main ()] starts the text REPL and allows for game play.
  * returns: unit *)
-let main () =
+let rec main () =
   ANSITerminal.(print_string [red]
     "\n\nWelcome to the Game of Go.\n");
   let t = ask_type () in
@@ -52,9 +52,11 @@ let main () =
     | (None, None) -> (-1, -1)
   in
   let control = init_game n' h' t in
-  play_game control
+  match control with
+  | Board c -> play_game c
+  | _ -> main ()
 
 (* this line is necessary for the text repl in order to run--
  * [let () = main ()] is similar to any other let expression, but
  * calling main returns unit. this calls [main] in order to start the REPL*)
-let () = main ()
+let _ = main ()

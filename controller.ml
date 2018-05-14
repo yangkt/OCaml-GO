@@ -1,4 +1,3 @@
-open Gui
 open Board
 open Move
 
@@ -21,8 +20,9 @@ let initiate_controller n h t =
     | 1 -> None
     | 2 -> Easy
     | 3 -> Hard
+    | _ -> None
   in
-  Board {curr = board; pass = false; plyr = 1; ai = b}
+  Board {curr = board; pass = false; ai = b}
 
 let init_game n h t =
   if t < 1 || t > 3 then
@@ -31,13 +31,14 @@ let init_game n h t =
     if h < 0 || h > 5 then
       Exception ("Number of handicap stones must be between 0 and 5")
     else
-      if n <> 9 || n <> 13 || n <> 19 then
+      if n <> 9 && n <> 13 && n <> 19 then
         Exception ("Invalid board size-- must be 9, 13, or 19")
       else
         initiate_controller n h t
 
+          (*)
 let update_gui board =
-  let message = b.msg in
+  let message = board.msg in
   if (message = "Out of bounds" || message = "Position is occupied" ||
       message = "Illegal move") then
     update_message message
@@ -51,14 +52,15 @@ let update_gui board =
     update_score p' sp';
     update_player (string_of_int p);
     update_gui board
+          *)
 
 let turn s c =
   let cmd = Move.parse_move s in
   match cmd with
-  | Create (s, h) -> initiate_controller s h 0 (*need to change*)
+  | Create (s, h) -> init_game s h 0 (*need to change*)
   | Move (x, y) ->
     let board = c.curr in
-    let board' = place board x y in
+    let board' = place board (x, y) in
       Board {c with curr = board';}
   | Surrender ->
     let board = c.curr in
@@ -94,4 +96,3 @@ let turn s c =
       Board {c with curr = board';}
   | End_m ->
       End
-

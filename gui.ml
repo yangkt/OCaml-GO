@@ -243,7 +243,6 @@ let main () =
       (*draw_rect 225 65 gs gs;*)
       draw_grid gs 9 0;*)
 
-
   run true
 
-let _ = main ()
+(*let _ = main ()*)
