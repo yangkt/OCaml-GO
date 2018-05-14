@@ -93,7 +93,6 @@ let handle_grid px py s =
     (int_of_float xc, int_of_float yc)
   else (-1, -1)
 
-
 let rec handle_input n =
   let status = wait_next_event ([Button_down]) in
   let (x, y) = (status.mouse_x, status.mouse_y) in
@@ -188,7 +187,6 @@ let rec get_press () =
     else if (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4-25 && y_pos<750/4+25) then show_handicap_options 19
     else get_press ()
   else get_press ()
-
 
 let main () =
   let () = Random.self_init () in

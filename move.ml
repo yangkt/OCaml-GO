@@ -1,6 +1,6 @@
 
 type move =
-  | Create of int * int
+  | Create of int * int * int
   | Move of int * int
   | Surrender
   | Pass
@@ -36,21 +36,26 @@ let parse_move s =
     let constants = String.sub cmd 7 ((String.length cmd) - 7) in
     let space = String.index constants ' ' in
     let s1 = String.sub constants 0 space in
-    let s2 = String.sub constants
+    let c' = String.sub constants
         (space + 1) ((String.length constants) - (space+1)) in
-    let (i1, i2) = (int_of_string_opt s1, int_of_string_opt s2) in
-    let (size, handicap) =
-      match (i1, i2) with
-      | (Some s, Some h) -> (s, h)
-      | (None, Some h) -> (-1, 0)
-      | (Some s, None) -> (0, -1)
-      | (None, None) -> (-1, -1)
+    let space' = String.index c' ' ' in
+    let s2 = String.sub c' 0 space in
+    let s3 = String.sub c'
+        (space' + 1) ((String.length c') - (space+1)) in
+    let (i1, i2, i3) =
+      (int_of_string_opt s1, int_of_string_opt s2, int_of_string_opt s3) in
+    let (size, handicap, t) =
+      match (i1, i2, i3) with
+      | (Some s, Some h, Some t') -> (s, h, t')
+      | (None, _, _) -> (-1, 0, 0)
+      | (Some s, None, _) -> (0, -1, 0)
+      | (Some s, Some h, None) -> (0, 0, -1)
     in
-    match (size, handicap) with
-    | (-1, 0) -> Invalid ("size of board must be an integer")
-    | (0, -1) -> Invalid ("number of handicap stones must be an integer")
-    | (-1, -1) -> Invalid ("size + handicap stones must be integers")
-    | _ -> Create (size, handicap)
+    match (size, handicap, t) with
+    | (-1, 0, 0) -> Invalid ("size of board must be an integer")
+    | (0, -1, 0) -> Invalid ("number of handicap stones must be an integer")
+    | (0, 0, -1) -> Invalid ("type of game must be 1, 2, or 3")
+    | _ -> Create (size, handicap, t)
 
   else if (String.sub cmd 0 5 = "place") then
     let str = String.sub cmd 6 ((String.length cmd) - 6) in
