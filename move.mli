@@ -1,9 +1,8 @@
 
 type move =
-  | Create of int * int * int 
+  | Create of int * int * int
   | Place of int * int
   | Surrender
-  | Score
   | Pass
   | Help
   | Invalid of string
