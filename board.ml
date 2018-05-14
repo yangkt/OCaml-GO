@@ -313,12 +313,14 @@ let score_both brd =
    }
 
 
+(********************** AI place functions *********************************)
 (*TO DO comment*)
 let num_filter board (r,c) plr =
+  let size = Array.length board in
   let counter = ref 0 in
   for i = -1 to 1 do
     for j = -1 to 1 do
-      if board.(i).(j) = plr then
+      if i >= 0 && i < size && j >= 0 && j < size && board.(i).(j) = plr then
         incr counter
     done;
   done;
@@ -328,7 +330,6 @@ let num_filter board (r,c) plr =
 let int_of_bool b =
   if b then 1 else 0
 
-(********************** AI place functions *********************************)
 
 (*TO DO comment*)
 let greedy brd =
@@ -347,16 +348,23 @@ let greedy brd =
          (!temp_board).(i).(j) <- 0;);
     done;
   done;
-  let max_pos = ref (0,0) in
-  let max_score = ref min_int in
+  let print_array m =  Array.fold_left (fun s r -> s^(
+      Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
+      "" score_board in
+  print_endline (print_array score_board);
+  print_endline (print_array temp_board);
+  let max_score = Array.fold_left
+      (fun acc x -> Array.fold_left (fun acc_ x_ -> max acc_ x_) acc x)
+      min_int score_board in
+  let max_pos = ref [] in
   for i = 0 to size - 1 do
     for j = 0 to size - 1 do
-      if (score_board.(i).(j) > !max_score) then
-        (max_score := score_board.(i).(j);
-         max_pos := (i,j));
+      if score_board.(i).(j) = max_score then
+        max_pos := (i,j)::(!max_pos);
     done;
   done;
-  !max_pos
+  let rand = Random.int (List.length !max_pos) in
+  List.nth !max_pos rand
 
 (*TO DO comment*)
 let copy_board brd =
