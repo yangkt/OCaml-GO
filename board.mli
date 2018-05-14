@@ -24,10 +24,9 @@ val initiate_game : int -> int -> board
  * returns empty list of no pieces are on the board *)
 val get_pos : board -> int -> (int*int) list
 
-(* [place] places a piece into [(int*int)] for the given [player]
+(* [place] places a piece into [(int*int)] for the given player as indicated in the
+ * board argument.
  * int int pair represents (row, column)
- * the [a] field represents the ai level,
- *  0 = no ai, 1 = easy ai, 2 = hard ai
  * if the placement is invalid in any way, the original board is returned with
  * a descriptive message in the msg field.  *)
 val place : board -> (int*int) -> board
@@ -47,10 +46,6 @@ val stone_score : board -> int -> int
 
 (* [score] returns the current score for the given [player] *)
 val score : board -> int -> int
-
-(* [take_turn] lets the [player] take their turn
- * returns an updated board with the move implemented
-val take_turn : int -> move -> t *)
 
 (* returns a string representation of the board
  * used for ascii printing  *)

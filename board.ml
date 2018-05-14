@@ -8,22 +8,27 @@ type board =
 
 type ai_level = Easy | Hard
 
-
 (********************** Game over checking functions ***************************)
 
-(*no positions left*)
+(*A function that check if that are no positions left*)
 let rec not_full brd =
   let board = brd.board in
     (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
 
-(*rewrites the msg field*)
+let end_board brd =
+      {
+         player = 0;
+         board = brd.board;
+         msg = "Game over"
+      }
+
+(*A function that rewrites the msg field when the board is full*)
 let is_end_msg brd =
        {
          player = 0;
          board = brd.board;
          msg = "Game over, board is full"
        }
-
 
 let get_pos_arr arr plr =
   let lst = ref [] in
@@ -332,7 +337,7 @@ let copy_board brd =
     {
     player = brd.player;
     board = copy_matrix brd.board;
-    msg = board.msg
+    msg = brd.msg
     }
 
 (*a function that returns a coordinate pair of an empty spot on the board*)
