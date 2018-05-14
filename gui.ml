@@ -162,9 +162,6 @@ let draw_names (p1, p2) =
   moveto 85 480;
   draw_string "0"
 
-
-
-
 let rec draw_nums gs size count=
   set_font "-*-fixed-medium-r-semicondensed--15-*-*-*-*-*-iso8859-1";
   if count = size then ()
@@ -317,9 +314,6 @@ let main () =
   draw_string "13x13 WITH AI";
   moveto (1100/2 +200) (750/4-10);
   draw_string "19x19 WITH AI";
-  get_press ();
-
-
-  run true
+  get_press ()
 
 let _ = main ()
