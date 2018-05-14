@@ -54,7 +54,7 @@ let update_gui board =
     update_gui board
           *)
 
-let turn s c =
+let rec turn s c =
   let cmd = Move.parse_move s in
   match cmd with
   | Create (s, h) -> init_game s h 0 (*need to change*)
