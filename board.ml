@@ -6,17 +6,23 @@ type board =
   msg : string
 }
 
+type ai_level = Easy | Hard
 
+(********************** Game over checking functions ***************************)
 
-
-(********************** End game checking functions ***************************)
-
-(*no positions left*)
-let not_full brd =
+(*A function that check if that are no positions left*)
+let rec not_full brd =
   let board = brd.board in
-   not (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
+    (Array.fold_left (fun acc x -> acc || Array.mem 0 x) false board)
 
-(*rewrites the msg field*)
+let end_board brd =
+      {
+         player = 0;
+         board = brd.board;
+         msg = "Game over"
+      }
+
+(*A function that rewrites the msg field when the board is full*)
 let is_end_msg brd =
        {
          player = 0;
@@ -24,16 +30,7 @@ let is_end_msg brd =
          msg = "Game over, board is full"
        }
 
-  (* a function to create an int array array of size [n]x[n] *)
-let create n =
-  match n with
-  | 9 ->  Array.make_matrix 9 9 0
-  | 13 -> Array.make_matrix 13 13 0
-  | 19 -> Array.make_matrix 19 19 0
-  | _ -> Array.make_matrix 1 1 0
-
-
-let get_pos_array arr plr =
+let get_pos_arr arr plr =
   let lst = ref [] in
   for r = 0 to  (Array.length arr)-1 do
     for c = 0 to (Array.length arr)-1 do
@@ -46,7 +43,7 @@ let get_pos_array arr plr =
 
 let get_pos brd plr =
   let board = brd.board in
-  get_pos_array board plr
+  get_pos_arr board plr
 
 let get_adjacents board (row,col) =
   let neighbors = ref [] in
@@ -111,7 +108,7 @@ let assign r c v a =
   in
   cap_terr neighbors
 
-(*************************Functions that deal with board initiation************************)
+(*****************Functions that deal with board initiation******************)
 
 (* a function to create an int array array of size [n]x[n] *)
 let create n =
@@ -131,19 +128,21 @@ let off_set n =
     | _ -> (0, 0)
 
 (*helper function to initiate_game that places the handicap stones*)
-let handicap h n =
+let handicap n h =
  let (s,n') = off_set n in
  let b = create n in
-  let rec hand h b =
+ if Array.length b = 1 then b
+else
+  let rec hand h b n s =
     match h with
     | 0 -> b
-    | 1 -> hand 0 (assign (s) (n'-s) 1 b )
-    | 2 -> hand 1 (assign (n'-s) (s) 1 b )
-    | 3 -> hand 2 (assign (n'-s) (n'-s) 1 b )
-    | 4 -> hand 3 (assign (s) (s) 1 b )
-    | 5 -> hand 4 (assign (n') (n') 1 b )
-    | _ -> b
-  in hand h b
+    | 1 -> hand 0 (assign (s) (n-s) 1 b ) n s
+    | 2 -> hand 1 (assign (n-s) (s) 1 b ) n s
+    | 3 -> hand 2 (assign (n-s) (n-s) 1 b ) n s
+    | 4 -> hand 3 (assign (s) (s) 1 b ) n s
+    | 5 -> hand 4 (assign (n/2) (n/2) 1 b ) n s
+    | _ -> Array.make_matrix 1 1 0
+  in hand h b n' s
 
 let initiate_game n h =
  let board = handicap n h in
@@ -153,12 +152,18 @@ let initiate_game n h =
     msg = "Game started"
   }
 
+(***************Functions that update board based on a turn********************)
+
+let valid_c c n =
+  c > -1 && c < n
+
 let pass brd =
   {
    player = (brd.player mod 2) + 1 ;
    board = brd.board;
    msg = "Turn was passed"
   }
+
 
 let place brd (r, c) =
   if not_full brd then
@@ -170,17 +175,17 @@ let place brd (r, c) =
       match l with
       | [] -> b
       | (row,col)::t ->
-        if board.(row).(col) = 1 || board.(row).(col) = 0 then legal t true
+        if board.(row).(col) = plr || board.(row).(col) = 0 then legal t true
         else legal t b
     in
-    if r < size && c < size then
+    if (valid_c r size) && (valid_c c size) then
       match board.(r).(c) with
       | 0 ->
         if legal adj false then
           {
             player = (plr mod 2) + 1;
             board = assign r c plr board;
-            msg = "Stone placed"
+            msg = "Stone placed at: ("^(string_of_int r)^","^(string_of_int c)^")"
           }
         else
           {
@@ -219,6 +224,9 @@ let to_ascii i =
 
 (************************* Scoring functions **********************************)
 
+let stone_score_arr board plr =
+  List.length (get_pos_arr board plr)
+
 let stone_score brd plr =
   List.length (get_pos brd plr)
 
@@ -245,11 +253,12 @@ let rec flood_fill (board, still_count) (r,c) plr count_ref =
 
 (* Find positions of [plr] *)
 let find_pos arr plr =
-  get_pos_array arr plr
+  get_pos_arr arr plr
 
 let copy_matrix m =
-  let n = Array.make_matrix 9 9 0 in
-  for i = 0 to 8 do
+  let size = Array.length m in
+  let n = Array.make_matrix size size 0 in
+  for i = 0 to size - 1 do
     n.(i) <- Array.copy m.(i);
   done;
   n
@@ -259,8 +268,7 @@ let print_array a =
     Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
   "" a
 
-let territory_score brd plr =
-  let board = brd.board in
+let territory_score_arr board plr =
   let size = Array.length board in
   let temp_board = copy_matrix board in
   let count = ref 0 in
@@ -273,5 +281,79 @@ let territory_score brd plr =
   done;
   !count
 
+let territory_score brd plr =
+  let board = brd.board in
+  territory_score_arr board plr
+
+let score_arr board plr =
+  (territory_score_arr board plr) + (stone_score_arr board plr)
+
 let score brd plr =
   (territory_score brd plr) + (stone_score brd plr)
+
+let num_filter board (r,c) plr =
+  let counter = ref 0 in
+  for i = -1 to 1 do
+    for j = -1 to 1 do
+      if board.(i).(j) = plr then
+        incr counter
+    done;
+  done;
+  !counter
+
+let int_of_bool b =
+  if b then 1 else 0
+
+(********************** AI place functions *********************************)
+
+let greedy brd =
+  let board = brd.board in
+  let size = Array.length board in
+  let temp_board = ref (copy_matrix board) in
+  let score_board = Array.make_matrix size size 0 in
+  for i = 0 to size - 1 do
+    for j = 0 to size - 1 do
+      if board.(i).(j) = 0 then
+        (temp_board := assign i j 2 (!temp_board);
+         score_board.(i).(j) <- (territory_score_arr !temp_board 2) +
+                                (stone_score_arr !temp_board 2) +
+                                (int_of_bool (num_filter board (i,j) 2 > 0)) -
+                                (score_arr board 1);
+         (!temp_board).(i).(j) <- 0;);
+    done;
+  done;
+  let max_pos = ref (0,0) in
+  let max_score = ref min_int in
+  for i = 0 to size - 1 do
+    for j = 0 to size - 1 do
+      if (score_board.(i).(j) > !max_score) then
+        (max_score := score_board.(i).(j);
+         max_pos := (i,j));
+    done;
+  done;
+  !max_pos
+
+let copy_board brd =
+    {
+    player = brd.player;
+    board = copy_matrix brd.board;
+    msg = brd.msg
+    }
+
+(*a function that returns a coordinate pair of an empty spot on the board*)
+let random brd =
+  let espots = get_pos brd 0 in
+  let rec r spots =
+    let rand  = Random.int (List.length espots) in
+      let points = List.nth espots rand in
+       let brd = place (copy_board brd) points in
+       if brd.msg = "Illegal move" then
+        let sp = List.filter (fun a -> a != points) spots in
+          r sp
+        else points
+  in r espots
+
+let place_ai brd lvl =
+  match lvl with
+  | Easy -> place brd (random brd)
+  | Hard -> place brd (greedy brd)

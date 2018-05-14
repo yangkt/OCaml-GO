@@ -1,3 +1,4 @@
+
 open Board
 open Move
 open Controller
@@ -10,7 +11,7 @@ open Controller
    what the possible command / moves are
  * - intiating player! it's really weird and lame right now but w h a t e v e r
  * - find a way to determine when the game is over
-*)
+ *)
 
 (*
 (* [update b c p] updates board [b] based on the given command, [cmd]. If the
@@ -18,21 +19,9 @@ open Controller
  * player [p]'s stones. *)
 let update board cmd p =
   match cmd with
-  | Move (x, y) -> place board (x, y)
+  | Move (x, y) -> place board (x, y)  (*to be changed*)
   | Score | Help | Display | Invalid -> board
 
-(* [assign x y board p] places a stone from [p] onto [board] on the corner
- * located at ([x], [y]). Determines whether or not the stone was successfully
- * placed.
- * returns: a status message describing whether the move for placing the stone
- * was invalid / move was successful. *)
-let assign x y board p =
-  let board' = place board (x, y) in
-  let message = board'.msg in
-  if message = "Position is Occupied" || message = "Out of bounds" then
-    "invalid move"
-  else
-    "stone is placed"
 
 (* [help_msg] returns the message if the player needs help with the game*)
 let help_msg () =
@@ -71,12 +60,7 @@ let rec ask_type () =
   let board' = update board cmd p in
   match cmd with
   | Move (i1, i2) ->
-      let status = assign i1 i2 board p in
-      if status = "invalid move" then
-        (print_endline "Your move was invalid."; play_game board' p)
-      else
-        (print_endline ("Your stone has been placed at (" ^ (string_of_int i1) ^
-        ", " ^ (string_of_int i2) ^ ")."); play_game board' p)
+      print_endline board'.msg; play_game board' (board'.player)
   | Score -> print_endline (string_of_int (score board p)); play_game board' p
   | Help -> print_endline (help_msg ()); play_game board' p
   | Display -> print_endline (board_to_string board); play_game board' p
@@ -92,6 +76,7 @@ let rec play_game control =
   | Exception s -> print_endline "invalid move"; play_game control
   | Board c' -> print_endline (c'.board.msg); play_game c'
 
+(*
 (* [main ()] starts the text REPL and allows for game play.
  * returns: unit *)
 let main () =
@@ -120,3 +105,4 @@ let main () =
  * [let () = main ()] is similar to any other let expression, but
  * calling main returns unit. this calls [main] in order to start the REPL*)
 let () = main ()
+*)

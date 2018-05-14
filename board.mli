@@ -1,5 +1,4 @@
 
-
 (* represents the board for go*)
 type board = {
   player : int;
@@ -7,31 +6,37 @@ type board = {
   msg : string
 }
 
+type ai_level = Easy | Hard
 
 (* [not_full] checks that [brd] is not full with stones *)
 val not_full : board -> bool
 
-(* val pass : board -> board *)
-
+(* [pass] passes the player's turn *)
 val pass : board -> board
-
 
 (* [initiate_game n h] initiates the game.
  * creates a board of size [n] with all entries set to 0 and sets the player
- * to [1], or black. the [h] argument is the number of handicapped positions.
- *  *)
+ * to [1], or black. the [h] argument represents the number of handicaps that will
+ * be placed at board initiation *)
 val initiate_game : int -> int -> board
-
 
 (* [get_pos] returns a list of positions of the pieces of a given color
  * returns empty list of no pieces are on the board *)
 val get_pos : board -> int -> (int*int) list
 
-(* [place] places a piece into [(int*int)] for the given [player]
+(* [place] places a piece into [(int*int)] for the given player as indicated in the
+ * board argument.
  * int int pair represents (row, column)
  * if the placement is invalid in any way, the original board is returned with
  * a descriptive message in the msg field.  *)
 val place : board -> (int*int) -> board
+
+val end_board : board -> board
+
+(* [place_ai] takes a board type and the level of the ai that is going to place
+ * a stone on the board.
+ * This function returns a board with the updated player and state. *)
+val place_ai : board -> ai_level -> board
 
 (* [territory_score brd plr] calculates the score from purely territory on the
  * board [brd] for player [plr] *)
@@ -44,10 +49,6 @@ val stone_score : board -> int -> int
 (* [score b p] returns the current score for the given player [p] on a game with
  * a board [b] *)
 val score : board -> int -> int
-
-(* [take_turn] lets the [player] take their turn
- * returns an updated board with the move implemented
-val take_turn : int -> move -> t *)
 
 (* returns a string representation of the board
  * used for ascii printing  *)

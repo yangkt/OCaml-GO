@@ -1,105 +1,210 @@
-open GMain
-open GdkKeysyms
-open GDraw
+open Graphics
 
-let locale = GtkMain.Main.init ()
-
-(* turn an int n into a string*)
-let get_string n =
-  Pervasives.string_of_int n
-
-(* update the players' scores with [score1] and [score2] and display in
-   [space] *)
-    (**********FIGURE OUT PACKING***********************)
-let display_score space score1 score2 =
-let hbox_score = GPack.hbox ~packing:space#add in
-space#connect#destroy  ~callback:Main.quit;
-  let s1 = "Player 1 Score: "^(get_string score1) in
-  let s2 = "Player 2 Score: "^(get_string score2) in
-  GMisc.label ~text:s1 ~packing:space#add ();
-  GMisc.label ~text:s2 ~packing:space#add ()
-
-(*fill_col   drawable#set_foreground (`NAME fill_col);
+(* NOTES:
+ * grid sizes: (sorry i hate floating point division)
+   if 9x9 -> 648
+    13x13 -> 650
+    19x19 -> 665
 *)
-let draw_rectangle (drawable) size ll_x ll_y tr_x tr_y =
-  let width = tr_x - ll_x in
-  let height = tr_y - ll_y in
-  drawable#rectangle ~x:ll_x ~y:ll_y ~width:width ~height:height ~filled: true ()
+
+(*so the gui doesn't close in 2 seconds*)
+let rec run b =
+  if b then run b else false
+
+(*draw_rect draws a rectangle at (x,y) with width w and height h.*)
+let draw_rect x y w h =
+  draw_rect x y w h
 
 
+(* draws the message on the final screen based on the players' scores*)
+let draw_message score1 score2 =
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--100-*-*-*-*-*-iso8859-1";
+  set_color (rgb 0 0 0);
 
-(* Initial board setup *)
-let init () =
-  let window = GWindow.window ~width:1000 ~height:700
-      ~title:"Go" () in
-  let vbox = GPack.vbox ~packing:window#add () in
-  window#connect#destroy ~callback:Main.quit;
-  let hbox = GPack.hbox ~packing:window#add () in
-  window#connect#destroy ~callback:Main.quit;
+  moveto (1100/2-500) (750/2+100);
+  if (score1>score2) then
+    draw_string "PLAYER 1 WINS"
+  else if (score1<score2) then
+    draw_string "PLAYER 2 WINS"
+  else
+    draw_string "TIE"
 
-  (* Menu bar *)
-  let menubar = GMenu.menu_bar ~packing:vbox#pack () in
-  let factory = new GMenu.factory menubar in
-  let accel_group = factory#accel_group in
-  let file_menu = factory#add_submenu "File" in
-  let board_menu = factory#add_submenu "Board Options" in
-  (* File menu *)
-  let factory = new GMenu.factory file_menu ~accel_group in
-  factory#add_item "Quit" ~key:_Q ~callback: Main.quit;
-
- (* Score display *)
-  display_score (vbox) (0) (0);
-
-  (*Board display*)
-  (*let drawable = GObj.drawable ~packing:vbox#pack () in
-  draw_rectangle drawable 0 0 400 400;*)
+(* what happens when you click restart*)
+let rec get_press_final () =
+  if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
+    if (x_pos > 1100/2-50 && x_pos < 1100/2+50 && y_pos>750/2-200 && y_pos<750/2-150)
+    then clear_graph () else get_press_final ()
+  else get_press_final ()
 
 
-  let bsize = new GMenu.factory board_menu ~accel_group in
-  bsize#add_item "9 x 9" ~key:_1 ~callback: (fun () -> prerr_endline "9 x 9");
-  bsize#add_item "13 x 13" ~key:_2 ~callback: (fun () -> prerr_endline "13 x 13");
-  bsize#add_item "19 x 19" ~key:_3 ~callback: (fun () -> prerr_endline "19 x 19");
-  bsize#add_item "Handicap Mode" ~key:_H ~callback: (fun () -> prerr_endline "Handicap Mode");
+let rec draw_final_screen score1 score2 =
+  clear_graph ();
+
+  set_color (rgb 44 206 238);
+  fill_rect (1100/2-50) (750/2-200) 100 50;
+
+  draw_message score1 score2;
+  set_color (rgb 0 0 0);
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  moveto (1100/2-40) (750/2-190);
+  draw_string "Restart";
+  get_press_final ()
 
 
-  (* Buttons for board size*)
-  let button1 = GButton.button ~label:"9 x 9"
-      ~packing:vbox#add () in
-  button1#connect#clicked ~callback: (fun () -> prerr_endline "9 x 9");
+let draw_finish () =
+  set_color (rgb 44 206 238);
+  fill_rect (1100/2+400) (750/2-340) 100 50;
+  moveto (1100/2+410) (750/2-330);
+  set_color (rgb 0 0 0);
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  draw_string "Finish"
 
-  let button2 = GButton.button ~label:"13 x 13"
-      ~packing:vbox#add () in
-  button2#connect#clicked ~callback: (fun () -> prerr_endline "13 x 13");
+let draw_log () =
+  draw_rect 200 5 696 100;
+  moveto 210 105;
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--18-*-*-*-*-*-iso8859-1";
+  draw_string "MESSAGE LOG"
 
-  let button3 = GButton.button ~label:"19 x 19"
-      ~packing:vbox#add () in
-  button3#connect#clicked ~callback: (fun () -> prerr_endline "19 x 19");
+let draw_names (p1, p2) =
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--21-*-*-*-*-*-iso8859-1";
+  moveto 85 580;
+  draw_string (p1 ^ "'s score: ");
+  moveto 925 580;
+  draw_string (p2 ^ "'s score: ")
 
-  let button4 = GButton.button ~label:"Handicap" ~packing:vbox#add () in
-  button4#connect#clicked ~callback: (fun () -> prerr_endline "Handicap Mode");
-
-
-  (* Display the windows and enter Gtk+ main loop *)
-  window#add_accel_group accel_group;
-  window#show ();
-  Main.main ()
-(* end init *)
-
-
-let update_player p =
-  failwith "Unimplemented"
+let rec handle_event () =
+  let status = wait_next_event ([Button_down]) in
+  let (x, y) = (status.mouse_x, status.mouse_y) in
+  print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
+  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then draw_final_screen 1 0
+  else
+    handle_event ()
 
 
-let update_message m =
-  failwith "Unimplemented"
+let rec draw_nums gs size count=
+  set_font "-*-fixed-medium-r-semicondensed--15-*-*-*-*-*-iso8859-1";
+  if count = size then ()
+  else
+    let interval = gs / (size -1) in
+    let x = 252 + ((count) * interval) in
+    let y = (160+gs) - ((count) * interval) in
+    moveto x (160+gs);
+    if (count<>0) then
+      draw_string (Pervasives.string_of_int count) else ();
+    moveto 245 y; draw_string (Pervasives.string_of_int count);
+    draw_nums gs size (count+1)
 
-let update_score s =
-  failwith "Unimplemented"
+(* [draw_grid gs s num] draws the lines for a [s]x[s] grid. [gs] the size of the
+   drawing area for the grid. [num] is the number of lines that have already
+   been drawn to the board.*)
+let rec draw_grid gs size num =
+  if num = (size - 2) then
+    ()
+  else
+    let interval = gs / (size - 1) in
+    let x = 260 + ((num + 1) * interval) in
+    let y = (160+gs) - ((num + 1) * interval) in
+    moveto x (160+gs);
+    lineto x 160;
+    moveto 260 y;
+    lineto (260+gs) y;
+    draw_grid gs size (num+1);
+    draw_nums gs size 0
 
-let draw_board arr =
-  failwith "Unimplemented"
 
-let handle_input i  msg=
-  failwith "Unimplemented"
+(*let rec go_back () =
+  if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
+    if (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4 && y_pos<750/4+50)
+    then main ()
+    else go_back ()*)
 
-let () = init ();
+let new_screen n =
+  clear_graph ();
+  set_color (rgb 46 256 2);
+  let gs = 576 in
+  draw_rect 260 160 gs gs;
+  draw_grid gs n 0;
+  draw_log ();
+  draw_finish ();
+  draw_names ("p1", "p2");
+  handle_event ()
+(*fill_rect (1100/2 - 100) (750/4) 200 50;
+  moveto (1100/2-50) (750/4+5);
+  draw_string "Back"*)
+
+
+let rec get_press () =
+  if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
+    if ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4+325 && y_pos<750/4+375)||
+        (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+325 && y_pos<750/4+375)||
+        (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+325 && y_pos<750/4+375))
+    then new_screen 9
+    else if ((x_pos>1100/2-3400 && x_pos<1100/2 && y_pos>750/4+150 && y_pos<750/4+200)||
+             (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+150 && y_pos<750/4+200)||
+             (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+150 && y_pos<750/4+200))
+    then new_screen 13
+    else if ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4-25 && y_pos<750/4+25)||
+             (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4-25 && y_pos<750/4+25)||
+             (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4-25 && y_pos<750/4+25))
+    then new_screen 19
+    else get_press ()
+  else get_press ()
+
+
+let main () =
+  let () = Random.self_init () in
+  open_graph " 1100x750";
+
+  set_window_title "GO";
+  set_font "-*-fixed-medium-r-semicondensed--50-*-*-*-*-*-iso8859-1";
+  moveto (1100/2-15) (750-80);
+  draw_string "GO";
+  set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  moveto (1100/2-50) (750-150);
+  draw_string "MAIN MENU";
+  set_color (rgb 44 206 238);
+  fill_rect (1100/2 - 400) (750/4+325) 200 50;
+  fill_rect (1100/2 - 100) (750/4+325) 200 50;
+  fill_rect (1100/2 + 200) (750/4+325) 200 50;
+
+  fill_rect (1100/2 - 400) (750/4+150) 200 50;
+  fill_rect (1100/2 - 100) (750/4+150) 200 50;
+  fill_rect (1100/2 + 200) (750/4+150) 200 50;
+
+  fill_rect (1100/2 - 400) (750/4-25) 200 50;
+  fill_rect (1100/2 - 100) (750/4-25) 200 50;
+  fill_rect (1100/2 + 200) (750/4-25) 200 50;
+  set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+
+  set_color (rgb 0 0 0);
+  moveto (1100/2 - 380) (750/4+340);
+  draw_string "9x9";
+  moveto (1100/2 - 380) (750/4+165);
+  draw_string "13x13";
+  moveto (1100/2 - 380) (750/4-10);
+  draw_string "19x19";
+
+  moveto (1100/2 - 90) (750/4+340);
+  draw_string "9x9 WITH AI";
+  moveto (1100/2 - 90) (750/4+165);
+  draw_string "13x13 WITH AI";
+  moveto (1100/2 - 90) (750/4-10);
+  draw_string "19x19 WITH AI";
+
+  moveto (1100/2 + 210) (750/4+340);
+  draw_string "9x9 HANDICAP";
+  moveto (1100/2 +200) (750/4+165);
+  draw_string "13x13 HANDICAP";
+  moveto (1100/2 +200) (750/4-10);
+  draw_string "19x19 HANDICAP";
+  get_press ();
+
+  (*game_play ();*)
+  (*  let gs = 648 in
+      (*draw_rect 225 65 gs gs;*)
+      draw_grid gs 9 0;*)
+
+
+  run true
+
+let _ = main ()

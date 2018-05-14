@@ -1,5 +1,6 @@
+
 test:
-	ocamlbuild -use-ocamlfind board_test.byte && ./board_test.byte
+	ocamlbuild -use-ocamlfind go_test.byte && ./go_test.byte
 
 text:
 	ocamlbuild -use-ocamlfind text.byte && ./text.byte
