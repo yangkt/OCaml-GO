@@ -132,6 +132,8 @@ let off_set n =
 let handicap h n =
  let (s,n') = off_set n in
  let b = create n in
+ if Array.length b = 1 then b
+else
   let rec hand h b =
     match h with
     | 0 -> b
@@ -163,7 +165,13 @@ let pass brd =
    msg = "Turn was passed"
   }
 
-let place brd (r, c) =
+(*a functions that returns a coordinate pair of an empty spot on a board*)
+let r_place brd =
+  let espots = get_pos brd 0 in
+    let rand  = Random.int (List.length espots) in
+      List.nth espots rand
+
+let place brd (r, c) ai =
   if not_full brd then
     let plr = brd.player in
     let board = brd.board in

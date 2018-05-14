@@ -1,6 +1,7 @@
 
 open Board
 open OUnit2
+open Text
 
 let empty_9 = Array.make_matrix 9 9 0
 let brd9 = {
@@ -78,8 +79,42 @@ let occ = "Position is occupied"
 
 let get_pos_place = [(5,5);(4,4);(3,3);(2,2);(1,1);(0,1);(0,0)]
 
+let v9_1 = Array.make_matrix 9 9 0 |> assign 2 6 1
+
+let v9_2 = Array.make_matrix 9 9 0 |> assign 2 6 1 |> assign 6 2 1
+
+let v9_3 = Array.make_matrix 9 9 0 |> assign 2 6 1 |> assign 6 2 1 |> assign 6 6 1
+
+let v9_4 = Array.make_matrix 9 9 0 |> assign 2 6 1 |> assign 6 2 1 |> assign 6 6 1
+                                   |> assign 2 2 1
+
+let v9_5 = Array.make_matrix 9 9 0 |> assign 2 6 1 |> assign 6 2 1 |> assign 6 6 1
+                                   |> assign 2 2 1 |> assign 4 4 1
+
+let v13_5 = Array.make_matrix 13 13 0 |> assign 3 9 1|> assign 9 3 1 |> assign 9 9 1
+                                    |> assign 3 3 1 |> assign 6 6 1
+
+let v19_5 = Array.make_matrix 19 19 0 |> assign 3 15 1 |> assign 15 3 1 |> assign 15 15 1
+                                    |> assign 3 3 1 |> assign 9 9 1
+
+let invalid = Array.make_matrix 1 1 0
 
 let board_test = [
+
+(******************************************************************************
+    Test game initiation
+*******************************************************************************)
+"valid initiation 1" >:: (fun _ -> assert_equal (Array.make_matrix 9 9 0) (initiate_game 9 0).board);
+"valid init with H1" >:: (fun _ -> assert_equal (v9_1) (initiate_game 9 1).board);
+"valid init with H2" >:: (fun _ -> assert_equal (v9_2) (initiate_game 9 2).board);
+"valid init with H3" >:: (fun _ -> assert_equal (v9_3) (initiate_game 9 3).board);
+"valid init with H4" >:: (fun _ -> assert_equal (v9_4) (initiate_game 9 4).board);
+"valid init with H5" >:: (fun _ -> assert_equal (v9_5) (initiate_game 9 5).board);
+"valid init size 13 H5" >:: (fun _ -> assert_equal (v13_5) (initiate_game 13 5).board);
+"valid init size 19 H5" >:: (fun _ -> assert_equal (v19_5) (initiate_game 19 5).board);
+"invalid init, invalid size" >:: (fun _ -> assert_equal (invalid) (initiate_game 10 3).board);
+"invalid init, invalid handi" >:: (fun _ -> assert_equal (invalid) (initiate_game 9 5).board);
+
 
 (******************************************************************************
     Test get_pos
@@ -88,12 +123,14 @@ let board_test = [
   "get_pos size empty" >:: (fun _ -> assert_equal get_pos_0_b1_size (List.length (get_pos brd1 0)));
   "get_post non existant" >:: (fun _ -> assert_equal [] (get_pos brd1 3));
 
+
+
 (******************************************************************************
     Test place
 *******************************************************************************)
-  "place on empty" >:: (fun _ -> assert_equal placeMsg (place brd1 (0,1)).msg );
-  "place out of bounds" >:: (fun _ -> assert_equal outofBound (place brd1 (30,0)).msg );
-  "place on stone" >:: (fun _ -> assert_equal occ (place brd1 (0,0)).msg );
+  "place on empty" >:: (fun _ -> assert_equal placeMsg (place brd1 (0,1) 0).msg );
+  "place out of bounds" >:: (fun _ -> assert_equal outofBound (place brd1 (30,0) 0).msg );
+  "place on stone" >:: (fun _ -> assert_equal occ (place brd1 (0,0) 0).msg );
 
 
 (******************************************************************************
@@ -113,22 +150,35 @@ let board_test = [
  "territory_score" >:: (fun _ -> assert_equal 12 (territory_score brd2 2));
 ]
 
-let move_test = [
-(******************************************************************************
-    Test parsing
-*******************************************************************************)
 
-(******************************************************************************
-    Test commands
-*******************************************************************************)
-
-]
+let place0 = "place 0 0"
+let place1 = "PlAce 0 0"
+let place2 = "place a i"
+let score = "score"
+let display = "show board"
+let help = "help"
 
 let text_test = [
 
 (******************************************************************************
     Test parsing
 *******************************************************************************)
+"parse place" >:: (fun _ -> assert_equal (Move (0,0)) (parse place0));
+"pase place 1" >:: (fun _ -> assert_equal (Move (0,0)) (parse place1));
+"parse place 2" >:: (fun _ -> assert_equal Invalid (parse place2));
+"parse score" >:: (fun _ -> assert_equal Score (parse score));
+"parse display" >:: (fun _ -> assert_equal Display (parse display));
+"parse help" >:: (fun _ -> assert_equal Help (parse help));
+
+]
+
+
+
+let move_test = [
+(******************************************************************************
+    Test parsing
+*******************************************************************************)
+
 
 (******************************************************************************
     Test commands
@@ -137,14 +187,12 @@ let text_test = [
 ]
 
 
-
-
 let suite =
   "Go test suite"
   >::: List.flatten [
     board_test;
-    text_test;
     move_test;
+    text_test;
   ]
 
 let _ = run_test_tt_main suite
