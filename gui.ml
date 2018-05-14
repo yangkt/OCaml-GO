@@ -119,6 +119,7 @@ let update_gui size w b =
 let update_player s =
   set_color (rgb 0 0 0);
   Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  moveto (1100/2+300) (750/2+100); 
   draw_string s
 
 let update_message s =
