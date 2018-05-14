@@ -6,6 +6,7 @@ type board = {
   msg : string
 }
 
+type ai_level = Easy | Hard
 
 (* [not_full] checks that [brd] is not full with stones *)
 val not_full : board -> bool
@@ -37,7 +38,9 @@ val get_pos : board -> int -> (int*int) list
  *  0 = no ai, 1 = easy ai, 2 = hard ai
  * if the placement is invalid in any way, the original board is returned with
  * a descriptive message in the msg field.  *)
-val place : board -> (int*int) -> int -> board
+val place : board -> (int*int) -> board
+
+val place_ai : board -> ai_level
 
 (* [territory_score brd plr] calculates the score from purely territory on the
  * board [brd] for player [plr] *)
