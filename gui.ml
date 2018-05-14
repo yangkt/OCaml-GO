@@ -137,7 +137,9 @@ let rec draw_grid gs size num =
     draw_grid gs size (num+1);
     draw_nums gs size 0;
     set_color black;
-    fill_circle 260 160 (interval / 5)
+    fill_circle 260 160 (interval / 3);
+    set_color white;
+    fill_circle 836 160 (interval / 3)
 
 
 (*let rec go_back () =
@@ -148,7 +150,10 @@ let rec draw_grid gs size num =
 
 let new_screen n =
   clear_graph ();
+  set_color (rgb 196 156 103);
+  fill_rect 0 0 1100 750;
   set_color (rgb 46 256 2);
+  set_color black;
   let gs = 576 in
   draw_rect 260 160 gs gs;
   draw_grid gs n 0;
@@ -160,13 +165,11 @@ let new_screen n =
   moveto (1100/2-50) (750/4+5);
   draw_string "Back"*)
 
-
 let rec show_handicap_options size =
   clear_graph ();
   (*open_graph (" 1100 750");*)
   set_color (rgb 44 206 238);
   fill_rect (1100/2) (750/2) 100 50
-
 
 
 let rec get_press () =
