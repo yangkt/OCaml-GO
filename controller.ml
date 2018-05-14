@@ -84,7 +84,8 @@ let rec turn s c =
    To place a stone down at the (x,y) corner, type 'place x y'. \n
    Scoring does not count as taking a move. Placing a stone is your turn and
     moves to the next player; however, if your move is invalid, you will be
-    allowed to place a stone down again.")
+    allowed to place a stone down again. \n
+    To end the game, type 'end'. ")
    | Score ->
     let board = c.curr in
     let board' = score_both board in
