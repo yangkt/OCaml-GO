@@ -23,7 +23,6 @@ let draw_rect x y w h =
 let draw_final_msg score1 score2 =
   Graphics.set_font "-*-fixed-medium-r-semicondensed--100-*-*-*-*-*-iso8859-1";
   set_color (rgb 0 0 0);
-
   moveto (1100/2-500) (750/2+100);
   if (score1>score2) then
     draw_string "PLAYER 1 WINS"
@@ -116,9 +115,11 @@ let update_gui size w b =
 (*********************************************************************)
 
 let update_player s =
+  set_color (rgb 196 156 103);
+  fill_rect (1100/2+300) (750/2+100) 20 20;
   set_color (rgb 0 0 0);
   Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
-  moveto (1100/2+300) (750/2+100); 
+  moveto (1100/2+300) (750/2+100);
   draw_string s
 
 let update_message s =
