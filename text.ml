@@ -16,18 +16,28 @@ let rec ask_type () =
       ask_type ()
   | None -> ask_type ()
 
-
 let rec play_game control =
+  let board = control.curr in
   let p = control.curr.player in
-  print_endline ("Player " ^ string_of_int p ^ " to move.");
-  print_string "> ";
-  let str = read_line () in
-  let result = turn str control in
-  match result with
-  | Help h -> print_endline h; play_game control
-  | Exception s -> print_endline "invalid move"; play_game control
-  | Board c -> print_endline (c.curr.msg); play_game c
-  | End -> print_endline "Thanks for playing"; exit 0
+  let a = control.ai in
+  match (p, a) with
+  | (1, _)  | (2, None) -> begin
+    print_endline ("Player " ^ string_of_int p ^ " to move.");
+    print_string "> ";
+    let str = read_line () in
+    let result = turn str control in
+    match result with
+    | Help h -> print_endline h; play_game control
+    | Exception s -> print_endline "invalid move"; play_game control
+    | Board c -> print_endline (c.curr.msg); play_game c
+    | End -> print_endline "Thanks for playing"; exit 0
+  end
+  | (2, l) -> begin
+      let b' = place_ai board l in
+      print_endline b'.msg;
+      play_game ({control with curr = b'})
+    end
+  | (_, _) -> print_endline "Thanks for playing"; exit 0
 
 
 (* [main ()] starts the text REPL and allows for game play.

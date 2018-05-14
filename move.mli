@@ -1,6 +1,6 @@
 
 type move =
-  | Create of int * int
+  | Create of int * int * int
   | Move of int * int
   | Surrender
   | Pass
