@@ -31,6 +31,7 @@ val get_pos : board -> int -> (int*int) list
  * a descriptive message in the msg field.  *)
 val place : board -> (int*int) -> board
 
+(* [end_board] takes a board and returns an updated board with *)
 val end_board : board -> board
 
 (* [place_ai] takes a board type and the level of the ai that is going to place

@@ -152,7 +152,7 @@ let initiate_game n h =
     msg = "Game started"
   }
 
-(***************Functions that update board based on a turn********************)
+(************** Functions that update board based on a turn *******************)
 
 let valid_c c n =
   c > -1 && c < n
@@ -163,7 +163,6 @@ let pass brd =
    board = brd.board;
    msg = "Turn was passed"
   }
-
 
 let place brd (r, c) =
   if not_full brd then
@@ -206,7 +205,6 @@ let place brd (r, c) =
       }
   else is_end_msg brd
 
-
 (*Helper function that converts a stone representation in board to a string *)
 let to_ascii i =
   match i with
@@ -220,7 +218,6 @@ let to_ascii i =
     Array.fold_left (fun s r -> s^(
       Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
     "" b
-
 
 (************************* Scoring functions **********************************)
 
