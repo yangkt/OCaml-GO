@@ -12,6 +12,7 @@ type result =
   | Board of control
   | Exception of string
   | Help of string
+  | End
 
 (* [init_game] initializes a game of Go with a empty board of size [n]X[n] and
  * [h] handicapped stones pre-placed on the board. If n is 0, then the handicap

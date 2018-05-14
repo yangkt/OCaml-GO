@@ -8,7 +8,7 @@ type move =
   | Invalid of string
   | Score
   | Display
-  | End
+  | End_m
 
 
 

@@ -22,7 +22,7 @@ let initiate_controller n h t =
     | 2 -> Easy
     | 3 -> Hard
   in
-  {curr = board; pass = false; plyr = 1; ai = b}
+  Board {curr = board; pass = false; plyr = 1; ai = b}
 
 let init_game n h t =
   if t < 1 || t > 3 then
@@ -55,23 +55,23 @@ let update_gui board =
 let turn s c =
   let cmd = Move.parse_move s in
   match cmd with
-  | Create (s, h, t) -> initiate_controller s h t
+  | Create (s, h) -> initiate_controller s h 0 (*need to change*)
   | Move (x, y) ->
     let board = c.curr in
     let board' = place board x y in
-    {c with curr = board'}
+      Board {c with curr = board';}
   | Surrender ->
     let board = c.curr in
     let board' = end_board board in
-    {c with curr = board'}
+      Board {c with curr = board';}
   | Pass ->
     let board = c.curr in
     if c.pass = true then
       let board' = end_board board in
-      {c with curr = board'; pass = true;}
+        Board {c with curr = board'; pass = true;}
     else
       let board' = pass board in
-      {c with curr = board'; pass = true;}
+        Board {c with curr = board'; pass = true;}
   | Invalid s -> Exception s
   | Help -> Help
    ("Welcome to the Game of Go. Your goal is to surround all your opponent's
@@ -87,11 +87,11 @@ let turn s c =
    | Score ->
     let board = c.curr in
     let board' = score_both board in
-    {c with curr = board'}
+      Board {c with curr = board';}
    | Display ->
     let board = c.curr in
     let board' = board_to_string board in
-    {c with curr = board'}
-  | End ->
-    End
+      Board {c with curr = board';}
+  | End_m ->
+      End
 

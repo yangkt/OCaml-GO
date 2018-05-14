@@ -8,14 +8,14 @@ type move =
   | Invalid of string
   | Score
   | Display
-  | End
+  | End_m
 
 
 let parse_move s =
   let cmd = String.lowercase_ascii s in
 
   if cmd = "end" then
-    End
+    End_m
 
   else if cmd = "show board" then
     Display
