@@ -314,6 +314,8 @@ let main () =
   draw_string "13x13 WITH AI";
   moveto (1100/2 +200) (750/4-10);
   draw_string "19x19 WITH AI";
-  get_press ()
+  get_press ();
+
+  run true
 
 let _ = main ()
