@@ -6,6 +6,7 @@ type board = {
   msg : string
 }
 
+type ai_level = Easy | Hard
 
 (* [not_full] checks that [brd] is not full with stones *)
 val not_full : board -> bool
