@@ -20,14 +20,6 @@ val pass : board -> board
  * be placed at board initiation *)
 val initiate_game : int -> int -> board
 
-val create : int -> int array array
-
-(* [initiate_game n] initiates the game.
- * creates a board of size [n] with all entries set to 0 and sets the player
- * to [1], or black. the [h] argument
- *  *)
-val initiate_game : int -> int -> board
-
 (* [get_pos] returns a list of positions of the pieces of a given color
  * returns empty list of no pieces are on the board *)
 val get_pos : board -> int -> (int*int) list
@@ -40,6 +32,9 @@ val get_pos : board -> int -> (int*int) list
  * a descriptive message in the msg field.  *)
 val place : board -> (int*int) -> board
 
+(* [place_ai] takes a board type and the level of the ai that is going to place
+ * a stone on the board.
+ * This function returns a board with the updated player and state. *)
 val place_ai : board -> ai_level -> board
 
 (* [territory_score brd plr] calculates the score from purely territory on the
