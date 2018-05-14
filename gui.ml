@@ -1,10 +1,16 @@
 open Graphics
 
 (* NOTES:
- * grid sizes: (sorry i hate floating point division)
-   if 9x9 -> 648
-    13x13 -> 650
-    19x19 -> 665
+ * [handle_input] is the repl for the loop
+ * when you create a new game in new_screen, call controller.init_game w whatever
+ * create an update_gui function (tbh that's just copying everything from controller)
+ * handle_input has an error b/c no controller initiated
+ * add a few params to the handle input fun
+ * more notes about updating where it has failwith:
+   - help -> rip lmao (unless you wanna draw the string but ew b/c it's so long)
+   - exception -> print out in message log
+   - end -> move to final screen
+   - board -> update gui stuff from above
 *)
 
 (*so the gui doesn't close in 2 seconds*)
@@ -78,7 +84,7 @@ let pixel_to_coord px py s =
     (int_of_float xc, int_of_float yc)
   else (-1, -1)
 
-let rec handle_input n =
+let rec handle_input size =
   let status = wait_next_event ([Button_down]) in
   let (x, y) = (status.mouse_x, status.mouse_y) in
   print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
@@ -86,9 +92,18 @@ let rec handle_input n =
     draw_final_screen 1 0
   else
   if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
-    handle_input n
+    let (posx, posy) = pixel_to_coord x y size in
+    match (posx, posy) with
+    | (-1, -1) -> handle_input size
+    | (x', y') ->
+      let result = Controller.turn ("place " ^ string_of_int x' ^ " " ^ string_of_int y') control in
+      match result with
+      | Board c -> failwith "Unimplemented" (* create update_gui method and redraw everything*)
+      | Help h -> failwith "Unimplemented"
+      | Exception s -> failwith "Unimplemented"
+      | End -> draw_final_screen 1 0
   else
-    handle_input n
+    handle_input size
 
 let coord_to_pixel size r c =
   let interval = 576 / size in
@@ -209,7 +224,7 @@ let rec draw_grid gs size num =
     then main ()
     else go_back ()*)
 
-let new_screen n =
+let new_screen size =
   clear_graph ();
   set_color (rgb 196 156 103);
   fill_rect 0 0 1100 750;
@@ -217,11 +232,12 @@ let new_screen n =
   set_color black;
   let gs = 576 in
   draw_rect 260 160 gs gs;
-  draw_grid gs n 0;
+  draw_grid gs size 0;
   draw_log ();
   draw_finish ();
   draw_names ("p1", "p2");
-  handle_input n
+  (*let control = init_game n 0 0 in *)
+  handle_input size
 (*fill_rect (1100/2 - 100) (750/4) 200 50;
   moveto (1100/2-50) (750/4+5);
   draw_string "Back"*)
