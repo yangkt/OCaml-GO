@@ -22,7 +22,7 @@ val update_score : int -> int -> unit
 
 (* [update_gui b] redraws the GUI to the updated board
  * returns: unit*)
-val update_gui : Board.t -> unit
+val update_gui : Board.board -> unit
 
 (* [handle_input i] deals with whatever input. Based on the input (i.e. button
  * clicked), generates a string that represents the action.*)

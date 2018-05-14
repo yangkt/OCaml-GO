@@ -13,17 +13,14 @@ val not_full : board -> bool
 
 (* val pass : board -> board *)
 
-val create : int -> int array array
-
 val pass : board -> board
 
 
-(* [initiate_game n] initiates the game.
+(* [initiate_game n h] initiates the game.
  * creates a board of size [n] with all entries set to 0 and sets the player
- * to [1], or black. the [h] argument
+ * to [1], or black. the [h] argument is the number of handicapped positions.
  *  *)
 val initiate_game : int -> int -> board
-
 
 
 (* [get_pos] returns a list of positions of the pieces of a given color
@@ -44,7 +41,8 @@ val territory_score : board -> int -> int
  * board [brd] for player [plr] *)
 val stone_score : board -> int -> int
 
-(* [score] returns the current score for the given [player] *)
+(* [score b p] returns the current score for the given player [p] on a game with
+ * a board [b] *)
 val score : board -> int -> int
 
 (* [take_turn] lets the [player] take their turn

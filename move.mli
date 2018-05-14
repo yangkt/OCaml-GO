@@ -1,5 +1,5 @@
 type move =
-  | Create of int * int
+  | Create of int * int * int 
   | Place of int * int
   | Surrender
   | Score
