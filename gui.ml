@@ -266,23 +266,25 @@ let rec show_handicap_options size =
   moveto (1100/2-200) (750/2 + 300); set_color (rgb 0 0 0);
   set_font "-*-fixed-medium-r-semicondensed--50-*-*-*-*-*-iso8859-1";
   draw_string "HANDICAP OPTIONS";
-  moveto (1100/2-310) (750/2+20);
-  set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
-  draw_string "1";
-  moveto (1100/2-160) (750/2+20);
-  draw_string "2";
-  moveto (1100/2-10) (750/2+20);
-  draw_string "3";
-  moveto (1100/2+140) (750/2+20);
-  draw_string "4";
-  moveto (1100/2+290) (750/2+20);
-  draw_string "5";
+
   set_color (rgb 44 206 238);
   fill_rect (1100/2-350) (750/2) 100 50;
   fill_rect (1100/2-200) (750/2) 100 50;
   fill_rect (1100/2-50) (750/2) 100 50;
   fill_rect (1100/2+100) (750/2) 100 50;
-    fill_rect (1100/2+250) (750/2) 100 50
+  fill_rect (1100/2+250) (750/2) 100 50;
+  set_color (rgb 0 0 0);
+  set_font "-*-fixed-medium-r-semicondensed--50-*-*-*-*-*-iso8859-1";
+  moveto (1100/2-310) (750/2);
+  draw_string "1";
+  moveto (1100/2-160) (750/2);
+  draw_string "2";
+  moveto (1100/2-10) (750/2);
+  draw_string "3";
+  moveto (1100/2+140) (750/2);
+  draw_string "4";
+  moveto (1100/2+290) (750/2);
+  draw_string "5"
 
 
 
