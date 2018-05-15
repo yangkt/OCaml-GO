@@ -51,6 +51,8 @@ val stone_score : board -> int -> int
  * a board [b] *)
 val score_ind : board -> int -> int
 
+(* [score_both] returns a board with the message field updated with the scores
+ * of the two players based on the board that was passed into the function *)
 val score_both : board -> board
 
 (* returns a string representation of the board in the board msg field
