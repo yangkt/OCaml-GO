@@ -31,14 +31,14 @@ let draw_final_msg score1 score2 =
   set_color (rgb 0 0 0);
   moveto (1100/2-500) (750/2+100);
   if (score1>score2) then
-    (moveto (1100/2-430) (750/2+100);draw_string "PLAYER 1 WINS")
+    (moveto (1100/2-300) (750/2+100);draw_string "PLAYER 1 WINS")
   else if (score1<score2) then
-    (moveto (1100/2-430) (750/2+100);draw_string "PLAYER 2 WINS")
+    (moveto (1100/2-300) (750/2+100);draw_string "PLAYER 2 WINS")
   else
-    (moveto (1100/2-200) (750/2+100);
+    (moveto (1100/2-70) (750/2+100);
   draw_string "TIE")
 
-(* what happens when you click restart*)
+(* what happens when you click quit*)
 let rec get_press_final () =
   if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
     if (x_pos > 1100/2-50 && x_pos < 1100/2+50 &&
@@ -47,6 +47,7 @@ let rec get_press_final () =
   else get_press_final ()
 
 
+(* draw quit button and the winning message*)
 let rec draw_final_screen score1 score2 =
   clear_graph ();
 
@@ -57,7 +58,7 @@ let rec draw_final_screen score1 score2 =
   set_color (rgb 0 0 0);
   Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
   moveto (1100/2-40) (750/2-190);
-  draw_string "Restart";
+  draw_string "Quit";
   get_press_final ()
 
 (*********************************************************************)
@@ -111,9 +112,9 @@ let rec handle_input size =
   let (x, y) = (status.mouse_x, status.mouse_y) in
   print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
   if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then
-    draw_final_screen 1 0
-  else
-  if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
+    draw_final_screen 0 0
+  else ()
+  (*if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
     let (posx, posy) = pixel_to_coord x y size in
     match (posx, posy) with
     | (-1, -1) -> handle_input size
@@ -133,7 +134,7 @@ let rec handle_input size =
         draw_string s
       | End -> draw_final_screen 1 0
   else
-    handle_input size
+    handle_input size*)
 
 
 
@@ -258,14 +259,35 @@ let new_screen size =
 (*********************************************************************)
 (************   ANY AND ALL THINGS RELATING TO INITIALS   ************)
 (*********************************************************************)
-
+(* show the handicap options for a board of size [size]*)
 let rec show_handicap_options size =
   clear_graph ();
   (*open_graph (" 1100 750");*)
+  moveto (1100/2-200) (750/2 + 300); set_color (rgb 0 0 0);
+  set_font "-*-fixed-medium-r-semicondensed--50-*-*-*-*-*-iso8859-1";
+  draw_string "HANDICAP OPTIONS";
+  moveto (1100/2-310) (750/2+20);
+  set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  draw_string "1";
+  moveto (1100/2-160) (750/2+20);
+  draw_string "2";
+  moveto (1100/2-10) (750/2+20);
+  draw_string "3";
+  moveto (1100/2+140) (750/2+20);
+  draw_string "4";
+  moveto (1100/2+290) (750/2+20);
+  draw_string "5";
   set_color (rgb 44 206 238);
-  fill_rect (1100/2) (750/2) 100 50
+  fill_rect (1100/2-350) (750/2) 100 50;
+  fill_rect (1100/2-200) (750/2) 100 50;
+  fill_rect (1100/2-50) (750/2) 100 50;
+  fill_rect (1100/2+100) (750/2) 100 50;
+    fill_rect (1100/2+250) (750/2) 100 50
 
 
+
+
+(* responds to button clicks in main menu *)
 let rec get_press () =
   if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
     if ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4+325 && y_pos<750/4+375)||
@@ -297,6 +319,7 @@ let rec get_press () =
     else get_press ()
   else get_press ()
 
+(* initial main menu screen *)
 let main () =
   let () = Random.self_init () in
   open_graph " 1100x750";
