@@ -19,6 +19,7 @@ bkahfjkd'''
 Our game offers two types of gameplay
 1. Text based: `make text`
 2. Gui based: `make gui` 
+  
 In each version of gameplay, there is the option to play as two players, one player vs an easy ai, and one player vs a hard ai.  These options will be presented at the start of the game.  In addition, the option to place handicap stones is also given at the start of the game.  There are a few ways to end the game, either through one player surrendering, both players passing consecutively, or quiting the game interface. 
 
 
