@@ -84,27 +84,6 @@ let pixel_to_coord px py s =
     (int_of_float xc, int_of_float yc)
   else (-1, -1)
 
-let rec handle_input size =
-  let status = wait_next_event ([Button_down]) in
-  let (x, y) = (status.mouse_x, status.mouse_y) in
-  print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
-  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then
-    draw_final_screen 1 0
-  else
-  if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
-    let (posx, posy) = pixel_to_coord x y size in
-    match (posx, posy) with
-    | (-1, -1) -> handle_input size
-    | (x', y') ->
-      let result = Controller.turn ("place " ^ string_of_int x' ^ " " ^ string_of_int y') control in
-      match result with
-      | Board c -> failwith "Unimplemented" (* create update_gui method and redraw everything*)
-      | Help h -> failwith "Unimplemented"
-      | Exception s -> failwith "Unimplemented"
-      | End -> draw_final_screen 1 0
-  else
-    handle_input size
-
 let coord_to_pixel size r c =
   let interval = 576 / size in
   let x = 260 + (interval * r) in
@@ -125,6 +104,35 @@ let update_gui size w b =
       let (x, y) = coord_to_pixel size r c in
       fill_circle x y (interval / 3)
 
+
+let rec handle_input size =
+  let status = wait_next_event ([Button_down]) in
+  let (x, y) = (status.mouse_x, status.mouse_y) in
+  print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
+  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then
+    draw_final_screen 1 0
+  else
+  if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
+    let (posx, posy) = pixel_to_coord x y size in
+    match (posx, posy) with
+    | (-1, -1) -> handle_input size
+    | (x', y') ->
+      let result = Controller.turn ("place " ^ string_of_int x' ^ " " ^ string_of_int y') control in
+      match result with
+      | Board c -> failwith "Unimplemented" (* create update_gui method and redraw everything*)
+      | Help h -> failwith "Unimplemented"
+      | Exception s -> set_color (rgb 196 156 103);
+        fill_rect 201 6 692 102; moveto (210) (80);
+        set_color (rgb 0 0 0);
+        Graphics.set_font "-*-fixed-medium-r-semicondensed--17-*-*-*-*-*-iso8859-1";
+        draw_string s
+      | End -> draw_final_screen 1 0
+  else
+    handle_input size
+
+
+
+
 (*********************************************************************)
 (******   ANY AND ALL THINGS RELATING TO EVENTS ON GRID SCREEN   *****)
 (*********************************************************************)
@@ -133,7 +141,7 @@ let update_player s =
   set_color (rgb 196 156 103);
   fill_rect (1100/2+300) (750/2+100) 20 20;
   set_color (rgb 0 0 0);
-  Graphics.set_font "-*-fixed-medium-r-semicondensed--25-*-*-*-*-*-iso8859-1";
+  Graphics.set_font "-*-fixed-medium-r-semicondensed--20-*-*-*-*-*-iso8859-1";
   moveto (1100/2+300) (750/2+100);
   draw_string s
 
