@@ -370,7 +370,6 @@ let copy_board brd =
 let random brd =
   let espots = get_pos brd 0 in
   let rec r spots =
-  Random.self_init;
     let rand  = Random.int (List.length espots) in
       let points = List.nth espots rand in
        let brd = place (copy_board brd) points in
@@ -382,7 +381,7 @@ let random brd =
 
 let place_ai brd lvl =
   match lvl with
-  | Easy -> Random.self_init;
+  | Easy -> Random.self_init ();
               let n = Random.int 10 in
               if n <= 1 then pass brd
             else place brd (random brd)

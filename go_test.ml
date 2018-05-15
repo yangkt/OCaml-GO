@@ -165,11 +165,7 @@ let text_test = [
 "parse score" >:: (fun _ -> assert_equal Score (parse_move score));
 "parse display" >:: (fun _ -> assert_equal Display (parse_move display));
 "parse help" >:: (fun _ -> assert_equal Help (parse_move help));
-<<<<<<< HEAD
-(* "parse create" >:: (fun _ -> assert_equal (Create (9,0)) (parse_move "create 9 0")); *)
-=======
 "parse create" >:: (fun _ -> assert_equal (Create (9,0,1)) (parse_move "create 9 0 1"));
->>>>>>> 5f323732d86f4a4857d4930b83909a4097003c13
 ]
 
 
