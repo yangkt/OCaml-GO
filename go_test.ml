@@ -165,7 +165,7 @@ let text_test = [
 "parse score" >:: (fun _ -> assert_equal Score (parse_move score));
 "parse display" >:: (fun _ -> assert_equal Display (parse_move display));
 "parse help" >:: (fun _ -> assert_equal Help (parse_move help));
-"parse create" >:: (fun _ -> assert_equal (Create (9,0)) (parse_move "create 9 0"));
+(* "parse create" >:: (fun _ -> assert_equal (Create (9,0)) (parse_move "create 9 0")); *)
 ]
 
 
@@ -191,4 +191,3 @@ let suite =
   ]
 
 let _ = run_test_tt_main suite
-
