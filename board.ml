@@ -262,7 +262,6 @@ let rec flood_fill (board, still_count) (r,c) plr count_ref =
 let find_pos arr plr =
   get_pos_arr arr plr
 
-(* [copy_matrix m] returns a deep copy of matrix [m] *)
 let copy_matrix m =
   let size = Array.length m in
   let n = Array.make_matrix size size 0 in

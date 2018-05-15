@@ -62,7 +62,10 @@ val board_to_string : board -> board
 (* models the set in Arrays module in OCaml but does not return unit*)
 val assign : int -> int -> int -> int array array -> int array array
 
-(* [copy_matrix m] returns a deep copy of matrix [m]*)
+(* [copy_matrix m] returns a deep copy of matrix [m] *)
 val copy_matrix : int array array -> int array array
 
+(* [get_group board pos] returns the number of liberties and a list of positions
+ * in [board] for a group of connected stones that are the same color as the
+ * stone at [pos] *)
 val get_group : int array array -> int * int -> int * (int * int) list
