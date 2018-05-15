@@ -73,7 +73,5 @@ let rec main () =
   | Board c -> play_game c
   | _ -> main ()
 
-(* this line is necessary for the text repl in order to run--
- * [let () = main ()] is similar to any other let expression, but
- * calling main returns unit. this calls [main] in order to start the REPL*)
+(* this line is necessary for the text repl in order to run *)
 let _ = main ()
