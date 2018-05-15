@@ -30,7 +30,7 @@ let rec play_game control =
     | Help h -> print_endline h; play_game control
     | Exception s -> print_endline "invalid move"; play_game control
     | Board c -> print_endline (c.curr.msg); play_game c
-    | End -> print_endline "Thanks for playing"; exit 0
+    | End c -> print_endline "Thanks for playing"; exit 0
   end
   | (2, l) -> begin
       let b' = place_ai board l in

@@ -104,8 +104,8 @@ let rec draw_final_screen score1 score2 =
  * returns: (-1, -1) if doesn't count as a click on a point, otherwise coords *)
 let pixel_to_coord px py s =
   let interval = 576 / (s-1) in
-  let (x', y') = (px-260, py-160) in
-  let diff = (float_of_int interval) /. 3. in
+  let (x', y') = (px-260, 576 - (py-160)) in
+  let diff = 1. /. 3. in
   let x'' = (float_of_int x') /. (float_of_int interval) in
   let y'' = (float_of_int y') /. (float_of_int interval) in
   let xf = (floor x'') in
@@ -113,16 +113,22 @@ let pixel_to_coord px py s =
   let yf = (floor y'') in
   let yc = (ceil y'') in
   if (x'' -. xf <= diff && y'' -. yf <= diff) then
-    (int_of_float xf, int_of_float yf)
+    (int_of_float yf, int_of_float xf)
   else
-  if (abs_float (x'' -. xc)) <= diff && (abs_float (y'' -. yc)) <= diff then
-    (int_of_float xc, int_of_float yc)
+  if (x'' -. xf <= diff && (abs_float (y'' -. yc)) <= diff) then
+    (int_of_float yc, int_of_float xf)
+  else
+  if ((abs_float (x'' -. xc)) <= diff && y'' -. yf <= diff) then
+    (int_of_float yf, int_of_float xc)
+  else
+  if ((abs_float (x'' -. xc)) <= diff && (abs_float (y'' -. yc)) <= diff) then
+    (int_of_float yc, int_of_float xc)
   else (-1, -1)
 
 let coord_to_pixel size r c =
-  let interval = 576 / size in
-  let x = 260 + (interval * r) in
-  let y = 736 - (interval * c) in
+  let interval = 576 / (size - 1) in
+  let x = 260 + (interval * c) in
+  let y = 736 - (interval * r) in
   (x, y)
 
 let update_gui size b w =
@@ -144,12 +150,13 @@ let update_gui size b w =
 let user_input (size:int) (control:Controller.control) : Controller.result =
   let status = wait_next_event ([Button_down]) in
   let (x, y) = (status.mouse_x, status.mouse_y) in
-  print_endline (string_of_int x ^ ", " ^ string_of_int y);
   if (x >= 260 && x <= 836 && y >= 160 && y <= 576) then
     let (posx, posy) = pixel_to_coord x y size in
     match (posx, posy) with
     | (-1, -1) -> Board control
     | (x', y') ->
+        print_endline (string_of_int x' ^ ", " ^ string_of_int y');
+        fill_circle x y (576 / (size - 1) / 3);
         let s = "place " ^ string_of_int x' ^ " " ^ string_of_int y' in
         turn s control
   else
