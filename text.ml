@@ -32,9 +32,10 @@ let rec play_game control =
     | Board c ->
       print_endline (c.curr.msg);
       let m = (board_to_string c.curr).msg in
-      print_endline m;
+      if c.curr.msg <> m then
+        print_endline m;
       play_game c
-    | End -> print_endline "Thanks for playing"; exit 0
+    | End c -> print_endline "Thanks for playing"; exit 0
   end
   | (2, l) -> begin
       let b' = place_ai board l in
