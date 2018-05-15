@@ -1,4 +1,5 @@
 open Graphics
+open Board
 
 (* NOTES:
  * [handle_input] is the repl for the loop
