@@ -5,7 +5,7 @@ open Controller
 
 let rec ask_type () =
   print_endline "Choose your type of game: ";
-  print_endline "[1]. 2 player \n [2]. 1 player (easy) \n [3] 1 player (hard)";
+  print_endline "[1] 2 player \n[2] 1 player (easy) \n[3] 1 player (hard)";
   print_string "> ";
   let op = read_int_opt () in
   match op with
@@ -29,12 +29,19 @@ let rec play_game control =
     match result with
     | Help h -> print_endline h; play_game control
     | Exception s -> print_endline "invalid move"; play_game control
-    | Board c -> print_endline (c.curr.msg); play_game c
+    | Board c ->
+      print_endline (c.curr.msg);
+      let m = (board_to_string c.curr).msg in
+      if c.curr.msg <> m then
+        print_endline m;
+      play_game c
     | End c -> print_endline "Thanks for playing"; exit 0
   end
   | (2, l) -> begin
       let b' = place_ai board l in
       print_endline b'.msg;
+      let m = (board_to_string b').msg in
+      print_endline m;
       play_game ({control with curr = b'})
     end
   | (_, _) -> print_endline "Thanks for playing"; exit 0

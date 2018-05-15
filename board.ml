@@ -108,8 +108,14 @@ let assign r c v a =
   in
   cap_terr neighbors
 
-(*****************Functions that deal with board initiation******************)
+let rec legal l b plr board =
+  match l with
+  | [] -> b
+  | (row,col)::t ->
+    if board.(row).(col) = plr || board.(row).(col) = 0 then legal t true plr board
+    else legal t b plr board
 
+(*****************Functions that deal with board initiation******************)
 (* a function to create an int array array of size [n]x[n] *)
 let create n =
   match n with
@@ -171,17 +177,10 @@ let place brd (r, c) =
     let board = brd.board in
     let size = Array.length board in
     let adj = get_adjacents board (r,c) in
-    let rec legal l b =
-      match l with
-      | [] -> b
-      | (row,col)::t ->
-        if board.(row).(col) = plr || board.(row).(col) = 0 then legal t true
-        else legal t b
-    in
     if (valid_c r size) && (valid_c c size) then
       match board.(r).(c) with
       | 0 ->
-        if legal adj false then
+        if legal adj false plr board then
           {
             player = (plr mod 2) + 1;
             board = assign r c plr board;
@@ -227,12 +226,17 @@ let to_ascii i =
 
 (************************* Scoring functions **********************************)
 
+(* [stone_score_arr board plr] returns the score of [plr] attributed to placed
+ * stones in [board] *)
 let stone_score_arr board plr =
   List.length (get_pos_arr board plr)
 
 let stone_score brd plr =
   List.length (get_pos brd plr)
 
+(* [flood_fill (board, still_count) (r,c) plr count_ref] runs a flood fill
+ * algorithm on [board] starting from position [(r,c)] and incrementing a
+ * counter [count_ref] to calculate territory score. *)
 let rec flood_fill (board, still_count) (r,c) plr count_ref =
   (* Index out of bounds *)
   if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
@@ -266,11 +270,8 @@ let copy_matrix m =
   done;
   n
 
-let print_array a =
-  Array.fold_left (fun s r -> s^(
-    Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
-  "" a
-
+(* [territory_score_arr board plr] returns the score of [plr] attributed
+ * to territory in [board] *)
 let territory_score_arr board plr =
   let size = Array.length board in
   let temp_board = copy_matrix board in
@@ -288,6 +289,7 @@ let territory_score brd plr =
   let board = brd.board in
   territory_score_arr board plr
 
+(* [stone_score board plr] returns the total score for [plr] in [board] *)
 let score_arr board plr =
   (territory_score_arr board plr) + (stone_score_arr board plr)
 
@@ -307,6 +309,8 @@ let score_both brd =
 
 (********************** AI place functions *********************************)
 
+(* [num_filter board (r,c) plr] returns the number of stones around the position
+ * [(r,c)] in [board] that are the same color as [plr] in *)
 let num_filter board (r,c) plr =
   let size = Array.length board in
   let counter = ref 0 in
@@ -323,12 +327,16 @@ let num_filter board (r,c) plr =
 let int_of_bool b =
   if b then 1 else 0
 
-(*The hard ai algorithm*)
+(* [greedy brd] runs a single step of a greedy algorithm for the AI to
+ * maximize the difference between its score and the player's score. *)
 let greedy brd =
   let board = brd.board in
   let size = Array.length board in
   let temp_board = ref (copy_matrix board) in
-  let score_board = Array.make_matrix size size 0 in
+  (* Make a matrix that is the same size as [board] and have each position
+   * represent the difference in score if the AI were to place a stone at that
+   * position.  *)
+  let score_board = Array.make_matrix size size min_int in
   for i = 0 to size - 1 do
     for j = 0 to size - 1 do
       if board.(i).(j) = 0 then
@@ -340,14 +348,11 @@ let greedy brd =
         (!temp_board).(i).(j) <- 0;);
     done;
   done;
-  let print_array a =
-    Array.fold_left (fun s r -> s^(
-      Array.fold_left (fun s_ c -> s_^" "^(string_of_int c) ) "" r )^"\n" )
-      "" a in
-  print_endline (print_array score_board);
+  (* Find the maximum score *)
   let max_score = Array.fold_left
       (fun acc x -> Array.fold_left (fun acc_ x_ -> max acc_ x_) acc x)
       min_int score_board in
+  (* Find all the positions with the maximum score *)
   let max_pos = ref [] in
   for i = 0 to size - 1 do
     for j = 0 to size - 1 do
@@ -355,10 +360,18 @@ let greedy brd =
         max_pos := (i,j)::(!max_pos);
     done;
   done;
-  let rand = Random.int (List.length !max_pos) in
-  List.nth !max_pos rand
+  (* Only consider the moves that are legal *)
+  let legal_moves = List.fold_left
+      (fun a x ->
+        let adj = get_adjacents board x in
+        if legal adj false 2 board then x::a else a) [] !max_pos in
+  if List.length legal_moves = 0 then
+    (-1,-1)
+  else
+    let rand = Random.int (List.length legal_moves) in
+    List.nth legal_moves rand
 
-(*a functions that make a deep copy of the board*)
+(* [copy_board brd] returns a deep copy of [brd] *)
 let copy_board brd =
     {
     player = brd.player;
@@ -381,9 +394,13 @@ let random brd =
 
 let place_ai brd lvl =
   match lvl with
-  | Easy -> Random.self_init ();
-              let n = Random.int 10 in
-              if n <= 1 then pass brd
-            else place brd (random brd)
-  | Hard -> place brd (greedy brd)
+  | Easy ->
+    Random.self_init ();
+    let n = Random.int 10 in
+    if n <= 1 then pass brd
+    else place brd (random brd)
+  | Hard ->
+    let pos = greedy brd in
+    if pos = (-1,-1) then pass brd
+    else place brd pos
   | None -> brd

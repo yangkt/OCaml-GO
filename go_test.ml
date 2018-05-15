@@ -1,4 +1,3 @@
-
 open Board
 open OUnit2
 open Move
