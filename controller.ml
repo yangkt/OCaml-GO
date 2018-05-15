@@ -11,7 +11,7 @@ type result =
   | Board of control
   | Exception of string
   | Help of string
-  | End
+  | End of control
 
 let initiate_controller n h t =
   let board = Board.initiate_game n h in
@@ -36,23 +36,21 @@ let init_game n h t =
       else
         initiate_controller n h t
 
-          (*)
-let update_gui board =
-  let message = board.msg in
-  if (message = "Out of bounds" || message = "Position is occupied" ||
-      message = "Illegal move") then
-    update_message message
-  else
-    update_message message;
-    let p = board.player in
-    let sp = score_ind board p in
-    let p' = ((p mod 2) + 1) in
-    let sp' = score_ind board p' in
-    update_score p sp;
-    update_score p' sp';
-    update_player (string_of_int p);
-    update_gui (Array.length board.board) (get_pos board 2) (get_pos board 1)
-          *)
+let get_msg control =
+  let board = control.curr in
+  board.msg
+
+let score control p =
+  let board = control.curr in
+  score_ind board p
+
+let get_player control =
+  let board = control.curr in
+  board.player
+
+let get_stone_pos control p =
+  let board = control.curr in
+  get_pos board p
 
 let rec turn s c =
   let cmd = Move.parse_move s in
@@ -61,7 +59,15 @@ let rec turn s c =
   | Move (x, y) ->
     let board = c.curr in
     let board' = place board (x, y) in
-      Board {c with curr = board'; pass = false}
+    Board {c with curr = board'; pass = false}
+  | AI_easy ->
+    let board = c.curr in
+    let board' = place_ai board Easy in
+    Board {c with curr = board'; pass = false}
+  | AI_hard ->
+    let board = c.curr in
+    let board' = place_ai board Hard in
+    Board {c with curr = board'; pass = false}
   | Surrender ->
     let board = c.curr in
     let board' = end_board board in
@@ -95,4 +101,4 @@ let rec turn s c =
     let board' = board_to_string board in
       Board {c with curr = board';}
   | End_m ->
-      End
+      End c
