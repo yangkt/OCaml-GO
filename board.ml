@@ -242,13 +242,13 @@ let rec flood_fill (board, still_count) (r,c) plr count_ref =
     if board.(r).(c) = -1 || board.(r).(c) = plr then
       board, still_count
     (* Empty area bordered by both black and white -> belongs to neither *)
-    else if (board.(r).(c) = 1 && plr = 2) || (board.(r).(c) = 2 && plr = 1) then
+    else if (board.(r).(c) = (plr mod 2 ) + 1) then
       board, false
     (* Mark space as counted, increment counter, and recurse *)
     else
       let new_board = assign r c (-1) board in
       incr count_ref;
-      let down = flood_fill (new_board, true) (r+1,c) plr count_ref in
+      let down = flood_fill (new_board, still_count) (r+1,c) plr count_ref in
       let up = flood_fill down (r-1,c) plr count_ref in
       let left = flood_fill up (r,c-1) plr count_ref in
       let right = flood_fill left (r,c+1) plr count_ref in
@@ -312,7 +312,9 @@ let num_filter board (r,c) plr =
   let counter = ref 0 in
   for i = -1 to 1 do
     for j = -1 to 1 do
-      if i >= 0 && i < size && j >= 0 && j < size && board.(i).(j) = plr then
+      let r' = r + i in
+      let c' = c + j in
+      if r'>=0 && r'<size && c'>=0 && c'<size && board.(r').(c') = plr then
         incr counter
     done;
   done;
@@ -331,13 +333,18 @@ let greedy brd =
     for j = 0 to size - 1 do
       if board.(i).(j) = 0 then
         (temp_board := assign i j 2 (!temp_board);
-         score_board.(i).(j) <- (territory_score_arr !temp_board 2) +
-                                (stone_score_arr !temp_board 2) +
-                                (int_of_bool (num_filter board (i,j) 2 > 0)) -
-                                (score_arr board 1);
-         (!temp_board).(i).(j) <- 0;);
+        let score = (score_arr !temp_board 2) +
+                    (int_of_bool (num_filter board (i,j) 2 > 0)) -
+                    (score_arr !temp_board 1) in
+        score_board.(i).(j) <- score;
+        (!temp_board).(i).(j) <- 0;);
     done;
   done;
+  let print_array a =
+    Array.fold_left (fun s r -> s^(
+      Array.fold_left (fun s_ c -> s_^" "^(string_of_int c) ) "" r )^"\n" )
+      "" a in
+  print_endline (print_array score_board);
   let max_score = Array.fold_left
       (fun acc x -> Array.fold_left (fun acc_ x_ -> max acc_ x_) acc x)
       min_int score_board in
@@ -367,13 +374,16 @@ let random brd =
       let points = List.nth espots rand in
        let brd = place (copy_board brd) points in
        if brd.msg = "Illegal move" then
-        let sp = List.filter (fun a -> a != points) spots in
+        let sp = List.filter (fun a -> a <> points) spots in
           r sp
         else points
   in r espots
 
 let place_ai brd lvl =
   match lvl with
-  | Easy -> place brd (random brd)
+  | Easy -> Random.self_init ();
+              let n = Random.int 10 in
+              if n <= 1 then pass brd
+            else place brd (random brd)
   | Hard -> place brd (greedy brd)
   | None -> brd
