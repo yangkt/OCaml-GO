@@ -31,11 +31,12 @@ let draw_final_msg score1 score2 =
   set_color (rgb 0 0 0);
   moveto (1100/2-500) (750/2+100);
   if (score1>score2) then
-    draw_string "PLAYER 1 WINS"
+    (moveto (1100/2-430) (750/2+100);draw_string "PLAYER 1 WINS")
   else if (score1<score2) then
-    draw_string "PLAYER 2 WINS"
+    (moveto (1100/2-430) (750/2+100);draw_string "PLAYER 2 WINS")
   else
-    draw_string "TIE"
+    (moveto (1100/2-200) (750/2+100);
+  draw_string "TIE")
 
 (* what happens when you click restart*)
 let rec get_press_final () =
