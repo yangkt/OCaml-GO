@@ -30,7 +30,6 @@ let is_end_msg brd =
          msg = "Game over, board is full"
        }
 
-(*TO DO comment*)
 let get_pos_arr arr plr =
   let lst = ref [] in
   for r = 0 to  (Array.length arr)-1 do
@@ -46,7 +45,6 @@ let get_pos brd plr =
   let board = brd.board in
   get_pos_arr board plr
 
-(*TO DO comment*)
 let get_adjacents board (row,col) =
   let neighbors = ref [] in
   if (row > 0) then
@@ -85,7 +83,6 @@ let get_group board pos =
   let (l,v) = bfs queue liberties v_list in
   !l, !v
 
-(*TO DO comment*)
 let rec capture board grp =
   match grp with
   | [] -> ()
@@ -157,7 +154,7 @@ let initiate_game n h =
 
 (************** Functions that update board based on a turn *******************)
 
-(*TO DO comment*)
+(*A function that checks if the coordinates are valid*)
 let valid_c c n =
   c > -1 && c < n
 
@@ -230,14 +227,12 @@ let to_ascii i =
 
 (************************* Scoring functions **********************************)
 
-(*TO DO comment*)
 let stone_score_arr board plr =
   List.length (get_pos_arr board plr)
 
 let stone_score brd plr =
   List.length (get_pos brd plr)
 
-(*TO DO comment*)
 let rec flood_fill (board, still_count) (r,c) plr count_ref =
   (* Index out of bounds *)
   if r < 0 || r >= Array.length board || c < 0 || c >= Array.length board then
@@ -271,13 +266,11 @@ let copy_matrix m =
   done;
   n
 
-(*TO DO comment*)
 let print_array a =
   Array.fold_left (fun s r -> s^(
     Array.fold_left (fun s_ c -> s_^" "^(to_ascii c) ) "" r )^"\n" )
   "" a
 
-(*TO DO comment*)
 let territory_score_arr board plr =
   let size = Array.length board in
   let temp_board = copy_matrix board in
@@ -295,7 +288,6 @@ let territory_score brd plr =
   let board = brd.board in
   territory_score_arr board plr
 
-(*TO DO comment*)
 let score_arr board plr =
   (territory_score_arr board plr) + (stone_score_arr board plr)
 
@@ -314,7 +306,7 @@ let score_both brd =
 
 
 (********************** AI place functions *********************************)
-(*TO DO comment*)
+
 let num_filter board (r,c) plr =
   let size = Array.length board in
   let counter = ref 0 in
@@ -326,12 +318,10 @@ let num_filter board (r,c) plr =
   done;
   !counter
 
-(*TO DO comment*)
 let int_of_bool b =
   if b then 1 else 0
 
-
-(*TO DO comment*)
+(*The hard ai algorithm*)
 let greedy brd =
   let board = brd.board in
   let size = Array.length board in
@@ -361,7 +351,7 @@ let greedy brd =
   let rand = Random.int (List.length !max_pos) in
   List.nth !max_pos rand
 
-(*TO DO comment*)
+(*a functions that make a deep copy of the board*)
 let copy_board brd =
     {
     player = brd.player;
