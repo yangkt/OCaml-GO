@@ -25,9 +25,9 @@ In each version of gameplay, there is the option to play as two players, one pla
 
 ## Instructions
 ### Text Based Game Play:
-Upon starting, the game will ask a series of questions for board initiation.  One the game begins, a series of instructions that include the possible text commands. will be given.
-### Gui Based Game Play:
-Upon starting, the gui will have several different options presented to the user as buttons on the screen.  Continue to make your selections until you reach the game.  Game play works by either clicking the screen to place a stone on the board, or by clicking one of the buttons. 
+Upon starting, the game will ask a series of questions for board initiation.  One the game begins, a series of instructions that include the possible text commands will be given.
+### GUI Based Game Play:
+Upon starting, the GUI will have several different options presented to the user as buttons on the screen.  Continue to make your selections until you reach the game.  Game play works by either clicking the screen to place a stone on the board, or by clicking one of the buttons. 
 
 
 
