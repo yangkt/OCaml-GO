@@ -120,7 +120,11 @@ let rec handle_input size =
       let result = Controller.turn ("place " ^ string_of_int x' ^ " " ^ string_of_int y') control in
       match result with
       | Board c -> failwith "Unimplemented" (* create update_gui method and redraw everything*)
-      | Help h -> failwith "Unimplemented"
+      | Help h -> set_color (rgb 196 156 103);
+        fill_rect 201 6 692 102; moveto (210) (80);
+        set_color (rgb 0 0 0);
+        Graphics.set_font "-*-fixed-medium-r-semicondensed--12-*-*-*-*-*-iso8859-1";
+        draw_string h
       | Exception s -> set_color (rgb 196 156 103);
         fill_rect 201 6 692 102; moveto (210) (80);
         set_color (rgb 0 0 0);
