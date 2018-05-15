@@ -1,5 +1,5 @@
 open Graphics
-open Board
+open Controller
 
 (* NOTES:
  * [handle_input] is the repl for the loop
@@ -62,6 +62,38 @@ let rec draw_final_screen score1 score2 =
   draw_string "Quit";
   get_press_final ()
 
+  (*********************************************************************)
+  (******   ANY AND ALL THINGS RELATING TO UPDATING GRID SCREEN   ******)
+  (*********************************************************************)
+
+  let update_player s =
+    set_color (rgb 196 156 103);
+    fill_rect (1100/2+300) (750/2+100) 20 20;
+    set_color (rgb 0 0 0);
+    Graphics.set_font "-*-fixed-medium-r-semicondensed--20-*-*-*-*-*-iso8859-1";
+    moveto (1100/2+300) (750/2+100);
+    draw_string s
+
+  let update_message s =
+    set_color (rgb 196 156 103);
+    fill_rect 201 6 695 104;
+    moveto 210 98;
+    Graphics.set_font "-*-fixed-medium-r-semicondensed--17-*-*-*-*-*-iso8859-1";
+    draw_string s
+
+  let update_score s p =
+    let y =
+    if p = 1 then
+      580
+    else
+      480
+    in
+    set_color (rgb 196 156 103);
+    fill_rect 85 y 100 55;
+    set_color white;
+    draw_string (string_of_int s)
+
+
 (*********************************************************************)
 (******   ANY AND ALL THINGS RELATING TO EVENTS ON GRID SCREEN   *****)
 (*********************************************************************)
@@ -93,74 +125,72 @@ let coord_to_pixel size r c =
   let y = 736 - (interval * c) in
   (x, y)
 
-let update_gui size w b =
+let update_gui size b w =
   set_color white;
   let interval = 576 / size in
   match w with
-  | [] -> (); set_color black;
+  | [] -> ();
+  | (r, c)::t -> begin
+    let (x, y) = coord_to_pixel size r c in
+    fill_circle x y (interval / 3)
+  end;
+  set_color black;
+  match b with
+  | [] -> ()
   | (r, c)::t ->
     let (x, y) = coord_to_pixel size r c in
-    fill_circle x y (interval / 3);
-    match b with
-    | [] -> ()
-    | (r, c)::t ->
-      let (x, y) = coord_to_pixel size r c in
-      fill_circle x y (interval / 3)
+    fill_circle x y (interval / 3)
 
-
-let rec handle_input size =
+let user_input (size:int) (control:Controller.control) : Controller.result =
   let status = wait_next_event ([Button_down]) in
   let (x, y) = (status.mouse_x, status.mouse_y) in
-  print_endline ("(" ^ string_of_int x ^ ", " ^ string_of_int y ^ ")");
-  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then
-    draw_final_screen 0 0
-  else ()
-  (*if x >= 260 && x <= 836 && y >= 160 && y <= 576 then
+  print_endline (string_of_int x ^ ", " ^ string_of_int y);
+  if (x >= 260 && x <= 836 && y >= 160 && y <= 576) then
     let (posx, posy) = pixel_to_coord x y size in
     match (posx, posy) with
-    | (-1, -1) -> handle_input size
+    | (-1, -1) -> Board control
     | (x', y') ->
-      let result = Controller.turn ("place " ^ string_of_int x' ^ " " ^ string_of_int y') control in
-      match result with
-      | Board c -> failwith "Unimplemented" (* create update_gui method and redraw everything*)
-      | Help h -> set_color (rgb 196 156 103);
-        fill_rect 201 6 692 102; moveto (210) (80);
-        set_color (rgb 0 0 0);
-        Graphics.set_font "-*-fixed-medium-r-semicondensed--12-*-*-*-*-*-iso8859-1";
-        draw_string h
-      | Exception s -> set_color (rgb 196 156 103);
-        fill_rect 201 6 692 102; moveto (210) (80);
-        set_color (rgb 0 0 0);
-        Graphics.set_font "-*-fixed-medium-r-semicondensed--17-*-*-*-*-*-iso8859-1";
-        draw_string s
-      | End -> draw_final_screen 1 0
+        let s = "place " ^ string_of_int x' ^ " " ^ string_of_int y' in
+        turn s control
   else
-    handle_input size*)
+  if (x>1100/2+400 && x<1100/2+500 && y>750/2-340 && y<750/2-290) then
+    turn "end" control
+  else
+    Board control
 
-
-
-
-(*********************************************************************)
-(******   ANY AND ALL THINGS RELATING TO EVENTS ON GRID SCREEN   *****)
-(*********************************************************************)
-
-let update_player s =
-  set_color (rgb 196 156 103);
-  fill_rect (1100/2+300) (750/2+100) 20 20;
-  set_color (rgb 0 0 0);
-  Graphics.set_font "-*-fixed-medium-r-semicondensed--20-*-*-*-*-*-iso8859-1";
-  moveto (1100/2+300) (750/2+100);
-  draw_string s
-
-let update_message s =
-  set_color (rgb 196 156 103);
-  fill_rect 201 6 695 104;
-  moveto 210 98;
-  Graphics.set_font "-*-fixed-medium-r-semicondensed--17-*-*-*-*-*-iso8859-1";
-  draw_string s
-
-let update_score s p =
-  failwith "Unimplemented"
+let rec handle_input size control : unit=
+  let p = control.curr.player in
+  let level = control.ai in
+  let result =
+    match (p, level) with
+    | (1, _) | (2, None) -> user_input size control
+    | (2, Easy) -> turn "place ai easy" control
+    | (2, Hard) -> turn "place ai hard" control
+    | (_, _) -> turn "end" control
+  in
+  match result with
+  | Board c -> begin
+      let message = get_msg c in
+      update_message message;
+      if  (message <> "Out of bounds" && message <> "Position is occupied" &&
+           message <> "Illegal move") then
+        let p = get_player c in
+        let sp = score c p in
+        let p' = ((p mod 2) + 1) in
+        let sp' = score c p' in
+        update_score p sp;
+        update_score p' sp';
+        update_player (string_of_int p);
+        update_gui (size) (get_stone_pos c 1) (get_stone_pos c 2);
+        handle_input size c
+    end
+  | Help h -> update_message h; handle_input size control
+  | Exception s -> update_message s; handle_input size control
+  | End c -> begin
+      let s1 = score c 1 in
+      let s2 = score c 2 in
+      draw_final_screen s1 s2
+    end
 
 
 (*********************************************************************)
@@ -227,11 +257,7 @@ let rec draw_grid gs size num =
     lineto (260+gs) y;
     draw_grid gs size (num+1);
     draw_nums gs size 0;
-    draw_player_field ();
-    set_color black;
-    fill_circle 260 160 (interval / 3);
-    set_color white;
-    fill_circle 836 160 (interval / 3)
+    draw_player_field ()
 
 (*let rec go_back () =
   if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
@@ -239,7 +265,7 @@ let rec draw_grid gs size num =
     then main ()
     else go_back ()*)
 
-let new_screen size =
+let new_screen size controller : unit =
   clear_graph ();
   set_color (rgb 196 156 103);
   fill_rect 0 0 1100 750;
@@ -251,17 +277,52 @@ let new_screen size =
   draw_log ();
   draw_finish ();
   draw_names ("p1", "p2");
+  update_gui size (get_stone_pos controller 1) (get_stone_pos controller 2);
   (*let control = init_game n 0 0 in *)
-  handle_input size
+  handle_input size controller
 (*fill_rect (1100/2 - 100) (750/4) 200 50;
   moveto (1100/2-50) (750/4+5);
   draw_string "Back"*)
 
+let start_game size control =
+  match control with
+  | Board c -> new_screen size c; control
+  | _ -> control
+
 (*********************************************************************)
 (************   ANY AND ALL THINGS RELATING TO INITIALS   ************)
 (*********************************************************************)
+
+let rec get_handicap_options size level =
+  let status = wait_next_event ([Button_down]) in
+  let (x, y) = (status.mouse_x, status.mouse_y) in
+  let control =
+  if (x >= (1100/2-350) && x <= ((1100/2-350) + 100) &&
+      y >= (750/2) && y <= ((750/2)+50)) then
+    init_game size 0 level
+  else if (x >= (1100/2-350) && x <= ((1100/2-350) + 100) &&
+           y >= (750/2) && y <= ((750/2)+50)) then
+    init_game size 1 level
+  else if (x >= (1100/2-350) && x <= ((1100/2-350) + 100) &&
+           y >= (750/2) && y <= ((750/2)+50)) then
+    init_game size 2 level
+  else if (x >= (1100/2-350) && x <= ((1100/2-350) + 100) &&
+           y >= (750/2) && y <= ((750/2)+50)) then
+    init_game size 3 level
+  else if (x >= (1100/2-350) && x <= ((1100/2-350) + 100) &&
+           y >= (750/2) && y <= ((750/2)+50)) then
+    init_game size 4 level
+  else if (x >= (1100/2-350) && x <= ((1100/2-350) + 100) &&
+           y >= (750/2) && y <= ((750/2)+50)) then
+    init_game size 5 level
+  else
+    get_handicap_options size level
+  in
+  start_game size control
+
+
 (* show the handicap options for a board of size [size]*)
-let rec show_handicap_options size =
+let rec show_handicap_options size level : unit =
   clear_graph ();
   (*open_graph (" 1100 750");*)
   moveto (1100/2-200) (750/2 + 300); set_color (rgb 0 0 0);
@@ -285,40 +346,48 @@ let rec show_handicap_options size =
   moveto (1100/2+140) (750/2);
   draw_string "4";
   moveto (1100/2+290) (750/2);
-  draw_string "5"
-
-
-
+  draw_string "5";
+  let _ = get_handicap_options size level in ()
 
 (* responds to button clicks in main menu *)
-let rec get_press () =
+let rec get_press () : unit =
   if (button_down ()) then let (x_pos, y_pos) = mouse_pos () in
-    if ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4+325 && y_pos<750/4+375)||
-        (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+325 && y_pos<750/4+375))
+    if
+      (x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4+325 && y_pos<750/4+375)
     then
-      new_screen 9
+      show_handicap_options 9 1
     else if
-      ((x_pos>1100/2-340 && x_pos<1100/2 && y_pos>750/4+150 && y_pos<750/4+200)||
-       (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+150 && y_pos<750/4+200))
+      (x_pos>1100/2-340 && x_pos<1100/2 && y_pos>750/4+150 && y_pos<750/4+200)
     then
-      new_screen 13
+      show_handicap_options 13 1
     else if
-      ((x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4-25 && y_pos<750/4+25)||
-       (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4-25 && y_pos<750/4+25))
+      (x_pos>1100/2-400 && x_pos<1100/2 && y_pos>750/4-25 && y_pos<750/4+25)
     then
-      new_screen 19
+      show_handicap_options 19 1
     else if
       (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+325 && y_pos<750/4+375)
     then
-      show_handicap_options 9
+      show_handicap_options 9 2
     else if
       (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4+150 && y_pos<750/4+200)
     then
-      show_handicap_options 13
+      show_handicap_options 13 2
     else if
       (x_pos>1100/2-100 && x_pos<1100/2+100 && y_pos>750/4-25 && y_pos<750/4+25)
     then
-      show_handicap_options 19
+      show_handicap_options 19 2
+    else if
+      (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+325 && y_pos<750/4+375)
+    then
+      show_handicap_options 9 3
+    else if
+      (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4+150 && y_pos<750/4+200)
+    then
+      show_handicap_options 13 3
+    else if
+      (x_pos>1100/2+200 && x_pos<1100/2+400 && y_pos>750/4-25 && y_pos<750/4+25)
+    then
+      show_handicap_options 19 3
     else get_press ()
   else get_press ()
 
@@ -357,20 +426,18 @@ let main () =
   draw_string "19x19";
 
   moveto (1100/2 - 90) (750/4+340);
-  draw_string "9x9 HANDICAP";
+  draw_string "9x9 AI EASY";
   moveto (1100/2 - 90) (750/4+165);
-  draw_string "13x13 HANDICAP";
+  draw_string "13x13 AI EASY";
   moveto (1100/2 - 90) (750/4-10);
-  draw_string "19x19 HANDICAP";
+  draw_string "19x19 AI EASY";
 
   moveto (1100/2 + 210) (750/4+340);
-  draw_string "9x9 WITH AI";
+  draw_string "9x9 AI HARD";
   moveto (1100/2 +200) (750/4+165);
-  draw_string "13x13 WITH AI";
+  draw_string "13x13 AI HARD";
   moveto (1100/2 +200) (750/4-10);
-  draw_string "19x19 WITH AI";
-  get_press ();
-
-  run true
+  draw_string "19x19 AI HARD";
+  get_press ()
 
 let _ = main ()

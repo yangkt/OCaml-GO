@@ -2,6 +2,8 @@
 type move =
   | Create of int * int * int
   | Move of int * int
+  | AI_easy
+  | AI_hard
   | Surrender
   | Pass
   | Help

@@ -2,6 +2,8 @@
 type move =
   | Create of int * int * int
   | Move of int * int
+  | AI_easy
+  | AI_hard
   | Surrender
   | Pass
   | Help
@@ -71,4 +73,13 @@ let parse_move s =
     match (x, y) with
     | (-1, -1) -> Invalid ("position must be a valid integer location")
     | _ -> Move (x, y)
+
+  else if String.sub cmd 0 8 = "place ai" then
+    let level = String.sub cmd 9 ((String.length cmd) - 9) in
+    if level = "easy" then
+      AI_easy
+    else if level = "hard" then
+      AI_hard
+    else
+      Invalid "invalid ai lol."
   else Invalid ("invalid move.")

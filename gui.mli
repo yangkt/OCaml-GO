@@ -27,4 +27,4 @@ val update_gui : int -> (int * int) list -> (int * int) list -> unit
 
 (* [handle_input i] deals with whatever input. Based on the input (i.e. button
  * clicked), generates a string that represents the action.*)
-val handle_input : int -> unit
+val handle_input : int -> Controller.control -> unit
