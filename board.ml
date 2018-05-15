@@ -368,7 +368,7 @@ let random brd =
       let points = List.nth espots rand in
        let brd = place (copy_board brd) points in
        if brd.msg = "Illegal move" then
-        let sp = List.filter (fun a -> a != points) spots in
+        let sp = List.filter (fun a -> a <> points) spots in
           r sp
         else points
   in r espots
